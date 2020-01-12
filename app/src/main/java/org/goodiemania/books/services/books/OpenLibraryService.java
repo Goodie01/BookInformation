@@ -1,10 +1,10 @@
-package org.goodiemania.books.services.misc.books;
+package org.goodiemania.books.services.books;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
-import org.goodiemania.books.services.misc.misc.HttpRequestService;
+import org.goodiemania.books.services.http.HttpRequestService;
 
 public class OpenLibraryService {
     private final HttpRequestService httpClient;
@@ -29,7 +29,7 @@ public class OpenLibraryService {
     public JsonNode getBookInfoByIsbn(final String isbn) {
         String searchString = String.format("ISBN:%s", isbn);
         String uriString = String.format("https://openlibrary.org/api/books?bibkeys=%s&format=json&jscmd=details", searchString);
-        String response = httpClient.get(uriString);
+        String response = httpClient.get(uriString, true).getResponse();
 
         try {
             return Optional.ofNullable(objectMapper.readTree(response))

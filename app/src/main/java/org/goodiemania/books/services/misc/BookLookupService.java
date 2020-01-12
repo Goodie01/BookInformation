@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.goodiemania.books.layers.Layer;
 import org.goodiemania.books.model.BookInformation;
-import org.goodiemania.books.services.misc.books.GoodReadsService;
-import org.goodiemania.books.services.misc.books.GoogleBooksService;
-import org.goodiemania.books.services.misc.books.LibraryThingService;
-import org.goodiemania.books.services.misc.books.OpenLibraryService;
-import org.goodiemania.books.services.misc.context.Context;
-import org.goodiemania.books.services.misc.xml.XmlDocument;
+import org.goodiemania.books.services.books.GoodReadsService;
+import org.goodiemania.books.services.books.GoogleBooksService;
+import org.goodiemania.books.services.books.LibraryThingService;
+import org.goodiemania.books.services.books.OpenLibraryService;
+import org.goodiemania.books.services.context.Context;
+import org.goodiemania.books.services.xml.XmlDocument;
 import org.reflections.Reflections;
 
 public class BookLookupService {

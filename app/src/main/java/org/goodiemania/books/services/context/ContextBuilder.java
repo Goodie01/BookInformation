@@ -1,7 +1,7 @@
-package org.goodiemania.books.services.misc.context;
+package org.goodiemania.books.services.context;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.goodiemania.books.services.misc.xml.XmlDocument;
+import org.goodiemania.books.services.xml.XmlDocument;
 
 public class ContextBuilder {
     private String isbn;

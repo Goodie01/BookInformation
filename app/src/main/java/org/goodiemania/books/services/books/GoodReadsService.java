@@ -1,10 +1,11 @@
-package org.goodiemania.books.services.misc.books;
+package org.goodiemania.books.services.books;
 
 import org.apache.commons.lang3.StringUtils;
-import org.goodiemania.books.services.misc.misc.HttpRequestService;
-import org.goodiemania.books.services.misc.misc.StringEscapeUtils;
-import org.goodiemania.books.services.misc.xml.XmlDocument;
-import org.goodiemania.books.services.misc.xml.XmlProcessingService;
+import org.goodiemania.books.services.http.HttpRequestService;
+import org.goodiemania.books.services.http.HttpServiceResponse;
+import org.goodiemania.books.services.misc.StringEscapeUtils;
+import org.goodiemania.books.services.xml.XmlDocument;
+import org.goodiemania.books.services.xml.XmlProcessingService;
 
 public class GoodReadsService {
     private final XmlProcessingService xmlProcessingService;
@@ -39,7 +40,8 @@ public class GoodReadsService {
     public XmlDocument getBookInfoByIsbn(final String isbn) {
         String uriString = String.format("https://www.goodreads.com/book/isbn/%s?format=xml&key=%s",
                 isbn, goodReadsKey);
-        String response = stringEscapeUtils.escapeHtmlEntitiesInXml(httpClient.get(uriString));
+        HttpServiceResponse httpServiceResponse = httpClient.get(uriString, true);
+        String response = stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse());
 
         if (StringUtils.containsAny(
                 response,

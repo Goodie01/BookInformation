@@ -1,7 +1,10 @@
 package org.goodiemania.books.services.misc;
 
 import org.apache.commons.lang3.StringUtils;
-import org.goodiemania.books.services.misc.misc.HttpRequestService;
+import org.goodiemania.books.services.http.HttpRequestService;
+import org.goodiemania.books.services.http.HttpServiceResponse;
+import org.goodiemania.books.services.http.ResponseType;
+import org.goodiemania.books.services.http.impl.HttpServiceResponseImpl;
 
 public class HttpRequestServiceMock implements HttpRequestService {
     //These are going to be terrible terrible giant loads of string. I'm sorry.
@@ -17,8 +20,7 @@ public class HttpRequestServiceMock implements HttpRequestService {
             + "}";
     public static final String OPEN_LIBRARY_RESP = "{}";
 
-    @Override
-    public String get(final String uriString) {
+    public String getRespString(final String uriString) {
         if (StringUtils.startsWith(uriString, "https://www.goodreads.com/")) {
             return GOOD_READS_RESP;
         } else if (StringUtils.startsWith(uriString, "https://www.librarything.com/services/rest/1.1/?method=librarything.ck.getwork")) {
@@ -31,5 +33,10 @@ public class HttpRequestServiceMock implements HttpRequestService {
           return OPEN_LIBRARY_RESP;
         }
         return "";
+    }
+
+    @Override
+    public HttpServiceResponse get(final String uriString, final boolean cachedResponseAllowed) {
+        return HttpServiceResponseImpl.of(getRespString(uriString), 200,200, ResponseType.TEST);
     }
 }

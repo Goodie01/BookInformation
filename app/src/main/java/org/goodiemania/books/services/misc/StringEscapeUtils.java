@@ -1,4 +1,4 @@
-package org.goodiemania.books.services.misc.misc;
+package org.goodiemania.books.services.misc;
 
 import java.util.Map;
 

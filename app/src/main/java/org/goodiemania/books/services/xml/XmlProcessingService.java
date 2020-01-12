@@ -1,4 +1,4 @@
-package org.goodiemania.books.services.misc.xml;
+package org.goodiemania.books.services.xml;
 
 import java.io.IOException;
 import java.io.StringReader;

@@ -1,6 +1,5 @@
 package org.goodiemania.books.services.misc;
 
-import org.goodiemania.books.services.misc.misc.StringEscapeUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package org.goodiemania.books.services.misc.xml;
+package org.goodiemania.books.services.xml;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;

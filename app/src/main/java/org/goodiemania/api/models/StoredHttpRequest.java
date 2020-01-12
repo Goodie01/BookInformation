@@ -1,6 +1,7 @@
 package org.goodiemania.api.models;
 
 import java.time.ZonedDateTime;
+import org.goodiemania.books.services.http.impl.HttpRequestResponse;
 import org.goodiemania.odin.external.annotations.Entity;
 import org.goodiemania.odin.external.annotations.Id;
 
@@ -8,19 +9,19 @@ import org.goodiemania.odin.external.annotations.Id;
 public class StoredHttpRequest {
     @Id
     private String url;
-    private String response;
+    private HttpRequestResponse response;
     private ZonedDateTime requestTime;
 
     public StoredHttpRequest() {
     }
 
-    public StoredHttpRequest(final String url, final String response, final ZonedDateTime now) {
+    public StoredHttpRequest(final String url, final HttpRequestResponse response, final ZonedDateTime now) {
         this.url = url;
         this.response = response;
         this.requestTime = now;
     }
 
-    public static StoredHttpRequest of(final String url, final String response) {
+    public static StoredHttpRequest of(final String url, final HttpRequestResponse response) {
         return new StoredHttpRequest(url, response, ZonedDateTime.now());
     }
 
@@ -32,11 +33,11 @@ public class StoredHttpRequest {
         this.url = url;
     }
 
-    public String getResponse() {
+    public HttpRequestResponse getResponse() {
         return response;
     }
 
-    public void setResponse(final String response) {
+    public void setResponse(final HttpRequestResponse response) {
         this.response = response;
     }
 

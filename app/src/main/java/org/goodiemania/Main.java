@@ -2,26 +2,21 @@ package org.goodiemania;
 
 import static io.javalin.apibuilder.ApiBuilder.path;
 import static io.javalin.apibuilder.ApiBuilder.post;
-import static io.javalin.apibuilder.ApiBuilder.put;
 
 import io.javalin.Javalin;
 import io.javalin.plugin.openapi.OpenApiOptions;
 import io.javalin.plugin.openapi.OpenApiPlugin;
 import io.swagger.v3.oas.models.info.Info;
 import org.goodiemania.api.models.requests.SearchRequest;
-import org.goodiemania.books.services.http.CachedHttpRequestServiceImpl;
+import org.goodiemania.books.services.books.GoodReadsService;
+import org.goodiemania.books.services.books.GoogleBooksService;
+import org.goodiemania.books.services.books.LibraryThingService;
+import org.goodiemania.books.services.books.OpenLibraryService;
+import org.goodiemania.books.services.http.HttpRequestService;
+import org.goodiemania.books.services.http.impl.CachedHttpRequestServiceImpl;
 import org.goodiemania.books.services.misc.BookLookupService;
-import org.goodiemania.books.services.misc.books.GoodReadsService;
-import org.goodiemania.books.services.misc.books.GoogleBooksService;
-import org.goodiemania.books.services.misc.books.LibraryThingService;
-import org.goodiemania.books.services.misc.books.OpenLibraryService;
-import org.goodiemania.books.services.misc.misc.HttpRequestService;
-import org.goodiemania.books.services.misc.misc.HttpRequestServiceImpl;
-import org.goodiemania.books.services.misc.misc.StringEscapeUtils;
-import org.goodiemania.books.services.misc.xml.XmlProcessingService;
-import org.goodiemania.odin.example.ExampleEntity;
-import org.goodiemania.odin.external.EntityManager;
-import org.goodiemania.odin.external.Odin;
+import org.goodiemania.books.services.misc.StringEscapeUtils;
+import org.goodiemania.books.services.xml.XmlProcessingService;
 
 
 /**
@@ -29,7 +24,6 @@ import org.goodiemania.odin.external.Odin;
  *
  * <p>
  * TODO
- * Figure out covers, and how to do comparisons of said covers
  * Published date?
  * Description
  * Book format? Eg hard cover, paper back etcq
@@ -88,7 +82,10 @@ public class Main {
                         bookLookup.byIsbn(searchRequest.getSearchTerm())
                                 .ifPresentOrElse(
                                         ctx::json,
-                                        () -> ctx.json("Unable to find anything"));
+                                        () -> {
+                                            ctx.status(404);
+                                            ctx.json("Unable to find anything");
+                                        });
                     });
                 });
             });

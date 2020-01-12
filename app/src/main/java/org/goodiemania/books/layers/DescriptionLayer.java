@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.goodiemania.books.model.BookData;
 import org.goodiemania.books.model.DataSource;
-import org.goodiemania.books.services.misc.context.Context;
+import org.goodiemania.books.services.context.Context;
 
 public class DescriptionLayer implements Layer {
     @Override

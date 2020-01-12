@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.model.BookData;
 import org.goodiemania.books.model.DataSource;
 import org.goodiemania.books.model.Isbn10;
-import org.goodiemania.books.services.misc.context.Context;
+import org.goodiemania.books.services.context.Context;
 
 public class Isbn10Layer implements Layer {
     @Override

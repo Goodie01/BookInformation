@@ -11,7 +11,7 @@ import java.util.Set;
 import org.goodiemania.books.model.Author;
 import org.goodiemania.books.model.BookData;
 import org.goodiemania.books.model.DataSource;
-import org.goodiemania.books.services.misc.context.Context;
+import org.goodiemania.books.services.context.Context;
 import org.w3c.dom.NodeList;
 
 public class AuthorLayer implements Layer {

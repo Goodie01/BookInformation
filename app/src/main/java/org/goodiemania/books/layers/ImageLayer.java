@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.model.BookData;
 import org.goodiemania.books.model.DataSource;
 import org.goodiemania.books.model.Image;
-import org.goodiemania.books.services.misc.context.Context;
+import org.goodiemania.books.services.context.Context;
 
 /**
  * Created by Macro303 on 2020-Jan-06.
