@@ -14,12 +14,10 @@ import org.goodiemania.books.services.http.impl.CachedHttpRequestServiceImpl;
 import org.goodiemania.books.services.misc.StringEscapeUtils;
 import org.goodiemania.books.services.misc.TimerService;
 import org.goodiemania.books.services.xml.XmlProcessingService;
+import org.goodiemania.dao.AuthorizedUserDao;
+import org.goodiemania.dao.StoredHttpRequestDao;
 import org.goodiemania.javalin.JavalinWrapper;
 import org.goodiemania.models.Properties;
-import org.goodiemania.models.api.AuthorizedUser;
-import org.goodiemania.models.http.StoredHttpRequest;
-import org.goodiemania.odin.external.EntityManager;
-import org.goodiemania.odin.external.Odin;
 
 
 /**
@@ -47,16 +45,14 @@ public class Main {
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        Odin odin = Odin.create()
-                .setObjectMapper(objectMapper)
-                .addPackageName("org.goodiemania.models")
-                .setJdbcConnectUrl("jdbc:sqlite:mainDatabase")
-                .build();
-        EntityManager<StoredHttpRequest> httpRequestEm = odin.createFor(StoredHttpRequest.class);
-        EntityManager<AuthorizedUser> userEm = odin.createFor(AuthorizedUser.class);
+        AuthorizedUserDao authorizedUserDao = new AuthorizedUserDao("jdbc:sqlite:mainDatabase");
+        authorizedUserDao.createTables();
+        StoredHttpRequestDao storedHttpRequestDao = new StoredHttpRequestDao("jdbc:sqlite:mainDatabase");
+        storedHttpRequestDao.createTables();
+
         TimerService timerService = new TimerService();
 
-        HttpRequestService httpClient = new CachedHttpRequestServiceImpl(javaHttpClient, httpRequestEm, timerService);
+        HttpRequestService httpClient = new CachedHttpRequestServiceImpl(javaHttpClient, storedHttpRequestDao, timerService);
         StringEscapeUtils stringEscapeUtils = new StringEscapeUtils();
         XmlProcessingService xmlProcessingService = new XmlProcessingService();
 
@@ -81,6 +77,6 @@ public class Main {
                 libraryThingService,
                 googleBooksService);
 
-        new JavalinWrapper(bookLookup, objectMapper, userEm).start();
+        new JavalinWrapper(bookLookup, objectMapper, authorizedUserDao).start();
     }
 }

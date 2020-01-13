@@ -1,29 +1,25 @@
 package org.goodiemania.models.api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.goodiemania.odin.external.annotations.Entity;
-import org.goodiemania.odin.external.annotations.Id;
-
-@Entity
 public class AuthorizedUser {
-    @Id
-    private final String authorizationKey;
-    private final String user;
+    private String authorizationKey;
+    private String user;
 
-    @JsonCreator
-    public AuthorizedUser(
-            @JsonProperty("authorizationKey") final String authorizationKey,
-            @JsonProperty("user") final String user) {
-        this.authorizationKey = authorizationKey;
-        this.user = user;
+    public AuthorizedUser() {
     }
 
     public String getAuthorizationKey() {
         return authorizationKey;
     }
 
+    public void setAuthorizationKey(final String authorizationKey) {
+        this.authorizationKey = authorizationKey;
+    }
+
     public String getUser() {
         return user;
+    }
+
+    public void setUser(final String user) {
+        this.user = user;
     }
 }

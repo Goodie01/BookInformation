@@ -10,28 +10,27 @@ import io.javalin.http.Context;
 import io.javalin.plugin.json.JavalinJackson;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.BookLookupService;
-import org.goodiemania.models.api.AuthorizedUser;
-import org.goodiemania.odin.external.EntityManager;
+import org.goodiemania.dao.AuthorizedUserDao;
 
 public class JavalinWrapper {
     private final BookLookupService bookLookupService;
     private ObjectMapper objectMapper;
-    private EntityManager<AuthorizedUser> userEm;
+    private AuthorizedUserDao authorizedUserDao;
 
     /**
      * Creates a new instance of the javalin wrapper.
      *
      * @param bookLookupService Used to look up books
      * @param objectMapper      Used to map objects to and from JSON
-     * @param userEm            Used to look up authorized users from the database
+     * @param authorizedUserDao Used to look up authorized users from the database
      */
     public JavalinWrapper(
             final BookLookupService bookLookupService,
             final ObjectMapper objectMapper,
-            final EntityManager<AuthorizedUser> userEm) {
+            final AuthorizedUserDao authorizedUserDao) {
         this.bookLookupService = bookLookupService;
         this.objectMapper = objectMapper;
-        this.userEm = userEm;
+        this.authorizedUserDao = authorizedUserDao;
     }
 
     /**
@@ -80,7 +79,7 @@ public class JavalinWrapper {
     private AccessManager checkAuthorization() {
         return (handler, ctx, permittedRoles) -> {
             String authorizationCode = ctx.header("authorization");
-            userEm.getById(authorizationCode)
+            authorizedUserDao.getByKey(authorizationCode)
                     .ifPresentOrElse(
                             authorizedUser -> {
                                 try {

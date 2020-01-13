@@ -14,22 +14,22 @@ import org.goodiemania.books.services.http.HttpServiceResponse;
 import org.goodiemania.books.services.http.ResponseType;
 import org.goodiemania.books.services.misc.TimerResponse;
 import org.goodiemania.books.services.misc.TimerService;
+import org.goodiemania.dao.StoredHttpRequestDao;
 import org.goodiemania.models.http.HttpRequestResponse;
 import org.goodiemania.models.http.HttpServiceResponseImpl;
 import org.goodiemania.models.http.StoredHttpRequest;
-import org.goodiemania.odin.external.EntityManager;
 
 public class CachedHttpRequestServiceImpl implements HttpRequestService {
     private final HttpClient httpClient;
-    private final EntityManager<StoredHttpRequest> em;
+    private final StoredHttpRequestDao requestDao;
     private final TimerService timerService;
 
     /**
      * Creates a new instance of the CachedHttpRequestServiceImpl.
      */
-    public CachedHttpRequestServiceImpl(final HttpClient httpClient, final EntityManager<StoredHttpRequest> em, final TimerService timerService) {
+    public CachedHttpRequestServiceImpl(final HttpClient httpClient, final StoredHttpRequestDao requestDao, final TimerService timerService) {
         this.httpClient = httpClient;
-        this.em = em;
+        this.requestDao = requestDao;
         this.timerService = timerService;
     }
 
@@ -55,7 +55,7 @@ public class CachedHttpRequestServiceImpl implements HttpRequestService {
 
 
     private Optional<HttpRequestResponse> findCachedResponse(final String uriString) {
-        Optional<StoredHttpRequest> foundHttpRequest = em.getById(uriString)
+        Optional<StoredHttpRequest> foundHttpRequest = requestDao.getByUrl(uriString)
                 .filter(storedHttpRequest ->
                         storedHttpRequest.getResponse().getRequestTime().isAfter(ZonedDateTime.now().minus(1, ChronoUnit.DAYS))
                 );
@@ -77,7 +77,7 @@ public class CachedHttpRequestServiceImpl implements HttpRequestService {
             HttpResponse<String> httpResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
 
             HttpRequestResponse response = HttpRequestResponse.of(httpResponse, ResponseType.LIVE);
-            em.save(StoredHttpRequest.of(uriString, response.cached()));
+            requestDao.save(StoredHttpRequest.of(uriString, response.cached()));
             System.out.println("Making a HTTP request to, " + uriString);
             return response;
         } catch (InterruptedException | IOException e) {

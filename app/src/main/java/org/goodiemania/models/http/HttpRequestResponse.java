@@ -16,25 +16,6 @@ public class HttpRequestResponse {
     /**
      * Creates a new instance given the below params.
      *
-     * @param body         String response body
-     * @param status       HTTP status code
-     * @param responseType Where did we get the response from?
-     * @return A HttpRequestResponse containing the fields
-     */
-    public static HttpRequestResponse of(final String body, final int status, final ResponseType responseType, final ZonedDateTime requestTime) {
-        HttpRequestResponse httpRequestResponse = new HttpRequestResponse();
-        httpRequestResponse.setBody(body);
-        httpRequestResponse.setStatus(status);
-        httpRequestResponse.setResponseType(responseType);
-        httpRequestResponse.setRequestTime(requestTime);
-
-        return httpRequestResponse;
-    }
-
-
-    /**
-     * Creates a new instance given the below params.
-     *
      * @param httpResponse Http response to injest
      * @param responseType Where did we get the response from?
      * @return A HttpRequestResponse containing the fields
@@ -49,8 +30,19 @@ public class HttpRequestResponse {
         return httpRequestResponse;
     }
 
+    /**
+     * Returns a copy of this object with a cached response type.
+     *
+     * @return A new HttpRequestResponse with a cached response type.
+     */
     public HttpRequestResponse cached() {
-        return HttpRequestResponse.of(body, status, ResponseType.CACHED, requestTime);
+        HttpRequestResponse httpRequestResponse = new HttpRequestResponse();
+        httpRequestResponse.setBody(body);
+        httpRequestResponse.setStatus(status);
+        httpRequestResponse.setResponseType(ResponseType.CACHED);
+        httpRequestResponse.setRequestTime(requestTime);
+
+        return httpRequestResponse;
     }
 
     public String getBody() {

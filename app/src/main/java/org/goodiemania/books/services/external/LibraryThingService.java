@@ -9,9 +9,9 @@ import org.goodiemania.books.services.xml.XmlProcessingService;
 
 public class LibraryThingService {
     private final HttpRequestService httpClient;
+    private final String developerKey;
     private XmlProcessingService xmlProcessingService;
     private StringEscapeUtils stringEscapeUtils;
-    private final String developerKey;
 
     /**
      * Creates a new instance of the Library Thing service.

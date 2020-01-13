@@ -1,25 +1,23 @@
 package org.goodiemania.models.http;
 
-import java.time.ZonedDateTime;
-import org.goodiemania.odin.external.annotations.Entity;
-import org.goodiemania.odin.external.annotations.Id;
+import org.jdbi.v3.core.mapper.Nested;
 
-@Entity
 public class StoredHttpRequest {
-    @Id
     private String url;
     private HttpRequestResponse response;
 
-    public StoredHttpRequest() {
-    }
-
-    private StoredHttpRequest(final String url, final HttpRequestResponse response, final ZonedDateTime now) {
-        this.url = url;
-        this.response = response;
-    }
-
+    /**
+     * Creates a StoredHttpRequest given the 2 arguments.
+     *
+     * @param url      URL that was used to access this response
+     * @param response The HTTP response
+     * @return A object representing both
+     */
     public static StoredHttpRequest of(final String url, final HttpRequestResponse response) {
-        return new StoredHttpRequest(url, response, ZonedDateTime.now());
+        StoredHttpRequest storedHttpRequest = new StoredHttpRequest();
+        storedHttpRequest.setUrl(url);
+        storedHttpRequest.setResponse(response);
+        return storedHttpRequest;
     }
 
     public String getUrl() {
@@ -30,10 +28,12 @@ public class StoredHttpRequest {
         this.url = url;
     }
 
+    @Nested
     public HttpRequestResponse getResponse() {
         return response;
     }
 
+    @Nested
     public void setResponse(final HttpRequestResponse response) {
         this.response = response;
     }
