@@ -70,7 +70,7 @@ public class CachedHttpRequestServiceImpl implements HttpRequestService {
         URI uri = URI.create(uriString);
         HttpRequest request = HttpRequest.newBuilder().GET()
                 .uri(uri)
-                .setHeader("User-Agent", "Jerome Java bot: https://gitlab.com/Goodie_/jerome")
+                .setHeader("User-Agent", "Jerome Java bot: https://gitlab.com/Goodie_/BookInformation")
                 .build();
 
         try {
