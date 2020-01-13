@@ -1,3 +1,3 @@
-# Jerome
+# BookInformation
 
-St. Jerome is the Patron Saint of Librarians. This seems pretty fitting name for a service designed to talk to various services and collate information about books.
+A service that looks up and combines information from several sources into a easy(ier) to consume format.
