@@ -34,7 +34,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
         URI uri = URI.create(uriString);
         HttpRequest request = HttpRequest.newBuilder().GET()
                 .uri(uri)
-                .setHeader("User-Agent", "Jerome Java bot: https://gitlab.com/Goodie_/BookInformation")
+                .setHeader("User-Agent", "BookInformation Java bot: https://gitlab.com/Goodie_/BookInformation")
                 .build();
 
         TimerResponse<HttpResponse<String>> timedEventResponse = timerService.time(() -> {
