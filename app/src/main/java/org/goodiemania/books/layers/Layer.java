@@ -1,6 +1,6 @@
 package org.goodiemania.books.layers;
 
-import org.goodiemania.books.services.context.Context;
+import org.goodiemania.books.context.Context;
 
 public interface Layer {
     /**

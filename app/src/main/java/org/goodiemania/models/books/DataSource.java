@@ -1,4 +1,4 @@
-package org.goodiemania.books.model;
+package org.goodiemania.models.books;
 
 public enum DataSource {
     GOOGLE_BOOKS,

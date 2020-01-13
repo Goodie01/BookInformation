@@ -1,5 +1,7 @@
 package org.goodiemania.books.services.http;
 
+import java.time.ZonedDateTime;
+
 public interface HttpServiceResponse {
     String getResponse();
 
@@ -8,4 +10,6 @@ public interface HttpServiceResponse {
     long getTime();
 
     ResponseType getResponseType();
+
+    ZonedDateTime getRequestTime();
 }

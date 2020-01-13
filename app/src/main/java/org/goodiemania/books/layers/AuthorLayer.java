@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import org.goodiemania.books.model.Author;
-import org.goodiemania.books.model.BookData;
-import org.goodiemania.books.model.DataSource;
-import org.goodiemania.books.services.context.Context;
+import org.goodiemania.books.context.Context;
+import org.goodiemania.models.books.Author;
+import org.goodiemania.models.books.BookData;
+import org.goodiemania.models.books.DataSource;
 import org.w3c.dom.NodeList;
 
 public class AuthorLayer implements Layer {

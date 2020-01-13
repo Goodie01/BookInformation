@@ -1,10 +1,11 @@
 package org.goodiemania.books.services.misc;
 
+import java.time.ZonedDateTime;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.services.http.HttpRequestService;
 import org.goodiemania.books.services.http.HttpServiceResponse;
 import org.goodiemania.books.services.http.ResponseType;
-import org.goodiemania.books.services.http.impl.HttpServiceResponseImpl;
+import org.goodiemania.models.http.HttpServiceResponseImpl;
 
 public class HttpRequestServiceMock implements HttpRequestService {
     //These are going to be terrible terrible giant loads of string. I'm sorry.
@@ -37,6 +38,6 @@ public class HttpRequestServiceMock implements HttpRequestService {
 
     @Override
     public HttpServiceResponse get(final String uriString, final boolean cachedResponseAllowed) {
-        return HttpServiceResponseImpl.of(getRespString(uriString), 200,200, ResponseType.TEST);
+        return HttpServiceResponseImpl.of(getRespString(uriString), 200,200, ResponseType.TEST, ZonedDateTime.now());
     }
 }

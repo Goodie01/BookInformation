@@ -1,11 +1,14 @@
-package org.goodiemania.books.model;
+package org.goodiemania.models.books;
 
 import java.util.Objects;
 
-public class Isbn10 {
+/**
+ * Created by Macro303 on 2020-Jan-06.
+ */
+public class Image {
     private String value;
 
-    public Isbn10(final String value) {
+    public Image(final String value) {
         this.value = Objects.requireNonNull(value);
     }
 
@@ -13,21 +16,20 @@ public class Isbn10 {
         return value;
     }
 
-    public void setValue(final String value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
     @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Image)) {
             return false;
         }
 
-        final Isbn10 isbn10 = (Isbn10) o;
-        return value.equals(isbn10.value);
+        return value.equals(((Image) o).value);
     }
 
     @Override
@@ -37,6 +39,8 @@ public class Isbn10 {
 
     @Override
     public String toString() {
-        return value;
+        return "Image{"
+                + "value='" + value + '\''
+                + '}';
     }
 }

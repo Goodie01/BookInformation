@@ -1,4 +1,4 @@
-package org.goodiemania.books.services.context;
+package org.goodiemania.books.context;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.goodiemania.books.services.xml.XmlDocument;
@@ -50,6 +50,7 @@ public class ContextBuilder {
      * @return Returns the built context
      */
     public Context build() {
+
         return new Context(isbn,
                 openLibraryResponse,
                 goodReadsResponse,

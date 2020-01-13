@@ -1,4 +1,4 @@
-package org.goodiemania.books.services.books;
+package org.goodiemania.books.services.external;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.services.http.HttpRequestService;
@@ -72,7 +72,8 @@ public class LibraryThingService {
         String uriString = String.format("https://www.librarything.com"
                         + "/services/rest/1.1/?method=librarything.ck.getauthor&id=%s&apikey=%s",
                 id, developerKey);
-        String response = stringEscapeUtils.escapeHtmlEntitiesInXml(httpClient.get(uriString, true).getResponse());
+        HttpServiceResponse httpServiceResponse = httpClient.get(uriString, true);
+        String response = stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse());
 
         return xmlProcessingService.parse(response);
     }

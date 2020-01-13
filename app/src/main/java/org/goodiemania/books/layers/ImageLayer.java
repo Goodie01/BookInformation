@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
-import org.goodiemania.books.model.BookData;
-import org.goodiemania.books.model.DataSource;
-import org.goodiemania.books.model.Image;
-import org.goodiemania.books.services.context.Context;
+import org.goodiemania.books.context.Context;
+import org.goodiemania.models.books.BookData;
+import org.goodiemania.models.books.DataSource;
+import org.goodiemania.models.books.Image;
 
 /**
  * Created by Macro303 on 2020-Jan-06.

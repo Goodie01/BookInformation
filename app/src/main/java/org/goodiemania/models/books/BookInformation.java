@@ -1,4 +1,4 @@
-package org.goodiemania.books.model;
+package org.goodiemania.models.books;
 
 import java.util.List;
 import java.util.Set;
@@ -53,8 +53,8 @@ public class BookInformation {
 
     @Override
     public String toString() {
-        return String.format("BookInformation{title='%s', authors=%s, isbn10='%s', isbn13='%s'}",
-                title, authors, isbn10, isbn13);
+        return String.format("BookInformation{title='%s', isbn10='%s', isbn13='%s'}",
+                title, isbn10, isbn13);
     }
 
     public List<BookData<Image>> getImage() {

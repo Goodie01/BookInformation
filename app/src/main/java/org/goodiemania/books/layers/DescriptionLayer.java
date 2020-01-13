@@ -3,9 +3,9 @@ package org.goodiemania.books.layers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.goodiemania.books.model.BookData;
-import org.goodiemania.books.model.DataSource;
-import org.goodiemania.books.services.context.Context;
+import org.goodiemania.books.context.Context;
+import org.goodiemania.models.books.BookData;
+import org.goodiemania.models.books.DataSource;
 
 public class DescriptionLayer implements Layer {
     @Override

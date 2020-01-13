@@ -1,22 +1,25 @@
 package org.goodiemania;
 
-import static io.javalin.apibuilder.ApiBuilder.path;
-import static io.javalin.apibuilder.ApiBuilder.post;
-
-import io.javalin.Javalin;
-import io.javalin.plugin.openapi.OpenApiOptions;
-import io.javalin.plugin.openapi.OpenApiPlugin;
-import io.swagger.v3.oas.models.info.Info;
-import org.goodiemania.api.models.requests.SearchRequest;
-import org.goodiemania.books.services.books.GoodReadsService;
-import org.goodiemania.books.services.books.GoogleBooksService;
-import org.goodiemania.books.services.books.LibraryThingService;
-import org.goodiemania.books.services.books.OpenLibraryService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.net.http.HttpClient;
+import org.goodiemania.books.BookLookupService;
+import org.goodiemania.books.services.external.GoodReadsService;
+import org.goodiemania.books.services.external.GoogleBooksService;
+import org.goodiemania.books.services.external.LibraryThingService;
+import org.goodiemania.books.services.external.OpenLibraryService;
 import org.goodiemania.books.services.http.HttpRequestService;
 import org.goodiemania.books.services.http.impl.CachedHttpRequestServiceImpl;
-import org.goodiemania.books.services.misc.BookLookupService;
 import org.goodiemania.books.services.misc.StringEscapeUtils;
+import org.goodiemania.books.services.misc.TimerService;
 import org.goodiemania.books.services.xml.XmlProcessingService;
+import org.goodiemania.javalin.JavalinWrapper;
+import org.goodiemania.models.Properties;
+import org.goodiemania.models.api.AuthorizedUser;
+import org.goodiemania.models.http.StoredHttpRequest;
+import org.goodiemania.odin.external.EntityManager;
+import org.goodiemania.odin.external.Odin;
 
 
 /**
@@ -37,7 +40,23 @@ public class Main {
      * @param args Arguments passed to the program....
      */
     public static void main(String[] args) {
-        HttpRequestService httpClient = new CachedHttpRequestServiceImpl();
+        HttpClient javaHttpClient = HttpClient.newBuilder()
+                .build();
+
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        Odin odin = Odin.create()
+                .setObjectMapper(objectMapper)
+                .addPackageName("org.goodiemania.models")
+                .setJdbcConnectUrl("jdbc:sqlite:mainDatabase")
+                .build();
+        EntityManager<StoredHttpRequest> httpRequestEm = odin.createFor(StoredHttpRequest.class);
+        EntityManager<AuthorizedUser> userEm = odin.createFor(AuthorizedUser.class);
+        TimerService timerService = new TimerService();
+
+        HttpRequestService httpClient = new CachedHttpRequestServiceImpl(javaHttpClient, httpRequestEm, timerService);
         StringEscapeUtils stringEscapeUtils = new StringEscapeUtils();
         XmlProcessingService xmlProcessingService = new XmlProcessingService();
 
@@ -62,44 +81,6 @@ public class Main {
                 libraryThingService,
                 googleBooksService);
 
-        Javalin app = Javalin.create(config -> {
-            config.registerPlugin(new OpenApiPlugin(getOpenApiOptions()));
-            config.defaultContentType = "application/json";
-            config.enableCorsForAllOrigins();
-
-            config.accessManager((handler, ctx, permittedRoles) -> {
-                System.out.println(ctx.path() + "; Authorization header:" + ctx.header("authorization"));
-                handler.handle(ctx);
-            });
-        });
-
-
-        app.routes(() -> {
-            path("v1", () -> {
-                path("book", () -> {
-                    post(ctx -> {
-                        SearchRequest searchRequest = ctx.bodyAsClass(SearchRequest.class);
-                        bookLookup.byIsbn(searchRequest.getSearchTerm())
-                                .ifPresentOrElse(
-                                        ctx::json,
-                                        () -> {
-                                            ctx.status(404);
-                                            ctx.json("Unable to find anything");
-                                        });
-                    });
-                });
-            });
-        });
-
-        app.start();
-    }
-
-    private static OpenApiOptions getOpenApiOptions() {
-        Info applicationInfo = new Info()
-                .version("1.0")
-                .description("Jerome");
-        return new OpenApiOptions(applicationInfo)
-                .activateAnnotationScanningFor("org.goodiemania.seshat")
-                .path("/swagger-docs");
+        new JavalinWrapper(bookLookup, objectMapper, userEm).start();
     }
 }

@@ -1,4 +1,4 @@
-package org.goodiemania.books.services.misc;
+package org.goodiemania.books;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.lang.reflect.InvocationTargetException;
@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.goodiemania.books.context.Context;
 import org.goodiemania.books.layers.Layer;
-import org.goodiemania.books.model.BookInformation;
-import org.goodiemania.books.services.books.GoodReadsService;
-import org.goodiemania.books.services.books.GoogleBooksService;
-import org.goodiemania.books.services.books.LibraryThingService;
-import org.goodiemania.books.services.books.OpenLibraryService;
-import org.goodiemania.books.services.context.Context;
+import org.goodiemania.books.services.external.GoodReadsService;
+import org.goodiemania.books.services.external.GoogleBooksService;
+import org.goodiemania.books.services.external.LibraryThingService;
+import org.goodiemania.books.services.external.OpenLibraryService;
 import org.goodiemania.books.services.xml.XmlDocument;
+import org.goodiemania.models.books.BookInformation;
 import org.reflections.Reflections;
 
 public class BookLookupService {
@@ -64,9 +64,10 @@ public class BookLookupService {
      * @return Optional possibly containing the found information
      */
     public Optional<BookInformation> byIsbn(final String isbn) {
-        Optional<Context> context = createContext(isbn);
-        context.ifPresent(context1 -> layers.forEach(layer -> layer.apply(context1)));
-        return context.map(Context::getBookInformation);
+        return createContext(isbn).map(context -> {
+            layers.forEach(layer -> layer.apply(context));
+            return context.getBookInformation();
+        });
     }
 
     private Optional<Context> createContext(final String isbn) {

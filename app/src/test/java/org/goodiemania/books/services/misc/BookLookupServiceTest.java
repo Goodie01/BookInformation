@@ -1,9 +1,10 @@
 package org.goodiemania.books.services.misc;
 
-import org.goodiemania.books.services.books.GoodReadsService;
-import org.goodiemania.books.services.books.GoogleBooksService;
-import org.goodiemania.books.services.books.LibraryThingService;
-import org.goodiemania.books.services.books.OpenLibraryService;
+import org.goodiemania.books.BookLookupService;
+import org.goodiemania.books.services.external.GoodReadsService;
+import org.goodiemania.books.services.external.GoogleBooksService;
+import org.goodiemania.books.services.external.LibraryThingService;
+import org.goodiemania.books.services.external.OpenLibraryService;
 import org.goodiemania.books.services.http.HttpRequestService;
 import org.goodiemania.books.services.xml.XmlProcessingService;
 import org.junit.jupiter.api.BeforeEach;

@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.goodiemania</groupId>
-    <artifactId>Jerome</artifactId>
-    <name>Jerome</name>
+    <artifactId>BookInformation</artifactId>
+    <name>BookInformation</name>
     <version>1.0.0-SNAPSHOT</version>
 
     <packaging>jar</packaging>
@@ -17,7 +17,7 @@
     </properties>
 
     <build>
-        <finalName>jerome</finalName>
+        <finalName>BookInformation</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -58,7 +58,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>seshat-core</finalName>
+                            <finalName>bookInformation-core</finalName>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <transformers>
                                 <!-- add Main-Class to manifest file -->
@@ -93,6 +93,14 @@
             <artifactId>jackson-dataformat-xml</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+        <!-- included for open API -->
+        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-kotlin -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -158,6 +166,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>1.7.30</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>4.8.34</version>
         </dependency>
     </dependencies>
 </project>

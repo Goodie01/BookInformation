@@ -2,7 +2,7 @@ package org.goodiemania.books.layers;
 
 import java.util.List;
 import java.util.Optional;
-import org.goodiemania.books.model.BookData;
+import org.goodiemania.models.books.BookData;
 
 public final class LayerHelper {
     /**

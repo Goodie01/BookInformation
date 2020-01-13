@@ -1,14 +1,11 @@
-package org.goodiemania.books.model;
+package org.goodiemania.models.books;
 
 import java.util.Objects;
 
-/**
- * Created by Macro303 on 2020-Jan-06.
- */
-public class Image {
+public class Isbn10 {
     private String value;
 
-    public Image(final String value) {
+    public Isbn10(final String value) {
         this.value = Objects.requireNonNull(value);
     }
 
@@ -16,20 +13,21 @@ public class Image {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Image)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
-        return value.equals(((Image) o).value);
+        final Isbn10 isbn10 = (Isbn10) o;
+        return value.equals(isbn10.value);
     }
 
     @Override
@@ -39,8 +37,6 @@ public class Image {
 
     @Override
     public String toString() {
-        return "Image{"
-                + "value='" + value + '\''
-                + '}';
+        return value;
     }
 }

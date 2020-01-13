@@ -6,19 +6,20 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.ZonedDateTime;
 import org.goodiemania.books.services.http.HttpRequestService;
 import org.goodiemania.books.services.http.HttpServiceResponse;
 import org.goodiemania.books.services.http.ResponseType;
 import org.goodiemania.books.services.misc.TimerResponse;
 import org.goodiemania.books.services.misc.TimerService;
+import org.goodiemania.models.http.HttpServiceResponseImpl;
 
 public class HttpRequestServiceImpl implements HttpRequestService {
     private final HttpClient httpClient;
     private final TimerService timerService;
 
     public HttpRequestServiceImpl() {
-        httpClient = HttpClient.newBuilder()
-                .build();
+        httpClient = HttpClient.newBuilder().build();
         timerService = new TimerService();
     }
 
@@ -48,6 +49,7 @@ public class HttpRequestServiceImpl implements HttpRequestService {
                 timedEventResponse.getResponse().body(),
                 timedEventResponse.getResponse().statusCode(),
                 timedEventResponse.getTime(),
-                ResponseType.LIVE);
+                ResponseType.LIVE,
+                ZonedDateTime.now());
     }
 }

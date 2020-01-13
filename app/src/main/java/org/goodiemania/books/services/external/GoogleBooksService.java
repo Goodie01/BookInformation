@@ -1,4 +1,4 @@
-package org.goodiemania.books.services.books;
+package org.goodiemania.books.services.external;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,18 +35,22 @@ public class GoogleBooksService {
         String uriString = String.format(
                 "https://www.googleapis.com/books/v1/volumes?q=isbn:%s&key=%s",
                 isbn, developerKey);
-        String response = httpClient.get(uriString, true).getResponse();
+        //TODO we're not actually logging how long this request takes
+        HttpServiceResponse httpServiceResponse = httpClient.get(uriString, true);
+
         try {
-            return readValue(response)
+            //TODO we should iterate and find all the results
+            return readValue(httpServiceResponse.getResponse())
                     .map(jsonNode -> jsonNode.get("items"))
                     .map(jsonNode -> jsonNode.get(0))
                     .map(jsonNode -> jsonNode.get("selfLink"))
                     .map(JsonNode::asText)
-                    .map((String individualSearchResultUri) -> httpClient.get(individualSearchResultUri, true))
+                    .map(individualSearchResultUri -> httpClient.get(individualSearchResultUri, true))
                     .flatMap((HttpServiceResponse value) -> readValue(value.getResponse()))
                     .orElse(null);
         } catch (IllegalStateException e) {
-            throw new IllegalStateException(isbn, e);
+            //TODO log exception
+            return null;
         }
     }
 

@@ -1,4 +1,4 @@
-package org.goodiemania.books.services.books;
+package org.goodiemania.books.services.external;
 
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.services.http.HttpRequestService;
@@ -43,10 +43,7 @@ public class GoodReadsService {
         HttpServiceResponse httpServiceResponse = httpClient.get(uriString, true);
         String response = stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse());
 
-        if (StringUtils.containsAny(
-                response,
-                "An unexpected error occurred. We will investigate this problem as soon as possible",
-                "Goodreads is over capacity.")) {
+        if (httpServiceResponse.getStatus() != 200) {
             return null;
         }
 
