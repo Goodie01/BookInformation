@@ -1,6 +1,7 @@
 package org.goodiemania.dao;
 
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.goodiemania.dao.misc.ZonedDateTimeArgumentFactory;
 import org.goodiemania.dao.misc.ZonedDateTimeColumnMapper;
 import org.goodiemania.models.http.StoredHttpRequest;
@@ -19,6 +20,17 @@ public class StoredHttpRequestDao {
      */
     public StoredHttpRequestDao(final String jdbcConnectUrl) {
         jdbi = Jdbi.create(jdbcConnectUrl);
+        jdbi.registerColumnMapper(new ZonedDateTimeColumnMapper());
+        jdbi.registerArgument(new ZonedDateTimeArgumentFactory());
+    }
+
+    /**
+     * Creates a instance of this DAO given a datasource.
+     *
+     * @param datasource JDBC connection URL to use
+     */
+    public StoredHttpRequestDao(final DataSource datasource) {
+        jdbi = Jdbi.create(datasource);
         jdbi.registerColumnMapper(new ZonedDateTimeColumnMapper());
         jdbi.registerArgument(new ZonedDateTimeArgumentFactory());
     }

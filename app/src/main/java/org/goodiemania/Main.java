@@ -3,7 +3,10 @@ package org.goodiemania;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import java.net.http.HttpClient;
+import java.sql.SQLException;
+import javax.sql.DataSource;
 import org.goodiemania.books.BookLookupService;
 import org.goodiemania.books.services.external.GoodReadsService;
 import org.goodiemania.books.services.external.GoogleBooksService;
@@ -31,6 +34,7 @@ import org.goodiemania.models.Properties;
  * </p>
  */
 public class Main {
+    private static final String JDBC_MYSQL = "jdbc:mysql://";
 
     /**
      * Main method for invoking the book service (Used for testing).
@@ -45,9 +49,9 @@ public class Main {
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        AuthorizedUserDao authorizedUserDao = new AuthorizedUserDao("jdbc:sqlite:mainDatabase");
+        AuthorizedUserDao authorizedUserDao = new AuthorizedUserDao(getMysqlDataSource());
         authorizedUserDao.createTables();
-        StoredHttpRequestDao storedHttpRequestDao = new StoredHttpRequestDao("jdbc:sqlite:mainDatabase");
+        StoredHttpRequestDao storedHttpRequestDao = new StoredHttpRequestDao(getMysqlDataSource());
         storedHttpRequestDao.createTables();
 
         TimerService timerService = new TimerService();
@@ -78,5 +82,23 @@ public class Main {
                 googleBooksService);
 
         new JavalinWrapper(bookLookup, objectMapper, authorizedUserDao).start();
+    }
+
+
+    private static DataSource getMysqlDataSource() {
+        MysqlDataSource dataSource = new MysqlDataSource();
+        dataSource.setUrl(JDBC_MYSQL + Properties.DB_HOST.get() + ":" + Properties.DB_PORT.get() + "/" + Properties.DB_DATABASE.get());
+        try {
+            dataSource.setUser(Properties.DB_USER.get().orElseThrow());
+            dataSource.setPassword(Properties.DB_PASSWORD.get().orElseThrow());
+
+            dataSource.setAutoReconnect(true);
+            dataSource.setUseSSL(false);
+            dataSource.setServerTimezone("UTC");
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+
+        return dataSource;
     }
 }

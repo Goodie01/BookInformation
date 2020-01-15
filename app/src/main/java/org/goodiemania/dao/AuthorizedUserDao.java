@@ -1,6 +1,7 @@
 package org.goodiemania.dao;
 
 import java.util.Optional;
+import javax.sql.DataSource;
 import org.goodiemania.models.api.AuthorizedUser;
 import org.jdbi.v3.core.Jdbi;
 
@@ -9,6 +10,10 @@ public class AuthorizedUserDao {
 
     public AuthorizedUserDao(final String jdbcConnectUrl) {
         jdbi = Jdbi.create(jdbcConnectUrl);
+    }
+
+    public AuthorizedUserDao(final DataSource mysqlDataSource) {
+        jdbi = Jdbi.create(mysqlDataSource);
     }
 
     public void createTables() {

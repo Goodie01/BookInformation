@@ -8,8 +8,11 @@ public enum Properties {
     API_KEY_GOOD_READS,
     API_KEY_LIBRARY_THING,
     API_KEY_GOOGLE_BOOKS,
-    PROXY_URL,
-    PROXY_PORT;
+    DB_HOST,
+    DB_PORT,
+    DB_DATABASE,
+    DB_PASSWORD,
+    DB_USER;
 
     /**
      * Get the specified parameter from the specified enum.
