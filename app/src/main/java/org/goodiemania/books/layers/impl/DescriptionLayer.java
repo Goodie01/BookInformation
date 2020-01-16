@@ -1,9 +1,10 @@
-package org.goodiemania.books.layers;
+package org.goodiemania.books.layers.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.goodiemania.books.context.Context;
+import org.goodiemania.books.layers.Layer;
 import org.goodiemania.models.books.BookData;
 import org.goodiemania.models.books.DataSource;
 

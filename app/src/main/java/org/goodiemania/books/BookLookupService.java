@@ -49,8 +49,7 @@ public class BookLookupService {
                 .flatMap(constructor -> {
                     try {
                         return Stream.of((Layer) constructor.newInstance());
-                    } catch (InstantiationException | IllegalAccessException
-                            | InvocationTargetException e) {
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                         throw new IllegalStateException(e);
                     }
                 })

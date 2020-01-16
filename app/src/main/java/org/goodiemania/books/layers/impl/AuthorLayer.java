@@ -1,4 +1,4 @@
-package org.goodiemania.books.layers;
+package org.goodiemania.books.layers.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.goodiemania.books.context.Context;
+import org.goodiemania.books.layers.Layer;
 import org.goodiemania.models.books.Author;
 import org.goodiemania.models.books.BookData;
 import org.goodiemania.models.books.DataSource;

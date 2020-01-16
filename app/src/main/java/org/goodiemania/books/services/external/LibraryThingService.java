@@ -47,13 +47,11 @@ public class LibraryThingService {
             return null;
         }
 
-        String response = stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse());
-
-        if (StringUtils.isBlank(response)) {
+        if (StringUtils.isBlank(httpServiceResponse.getResponse())) {
             return null;
         }
 
-        XmlDocument parse = xmlProcessingService.parse(response);
+        XmlDocument parse = xmlProcessingService.parse(stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse()));
 
         if (StringUtils.isNotBlank(parse.getValueAsString("/response/err"))) {
             return null;

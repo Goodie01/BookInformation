@@ -1,18 +1,19 @@
-package org.goodiemania.books.layers;
+package org.goodiemania.books.layers.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.context.Context;
+import org.goodiemania.books.layers.Layer;
 import org.goodiemania.models.books.BookData;
 import org.goodiemania.models.books.DataSource;
-import org.goodiemania.models.books.Isbn13;
+import org.goodiemania.models.books.Isbn10;
 
-public class Isbn13Layer implements Layer {
+public class Isbn10Layer implements Layer {
     @Override
     public void apply(final Context context) {
-        List<BookData<Isbn13>> descrList = new ArrayList<>();
+        List<BookData<Isbn10>> descrList = new ArrayList<>();
         getGoodReads(context).ifPresent(setBookData ->
                 LayerHelper.processBookData(descrList, setBookData));
         getGoogleBooks(context).ifPresent(setBookData ->
@@ -22,26 +23,27 @@ public class Isbn13Layer implements Layer {
         getFromSearchParam(context).ifPresent(setBookData ->
                 LayerHelper.processBookData(descrList, setBookData));
 
-        context.getBookInformation().setIsbn13(descrList);
+        context.getBookInformation().setIsbn10(descrList);
     }
 
-    private Optional<BookData<Isbn13>> getFromSearchParam(final Context context) {
-        if (context.getIsbn().length() == 13) {
-            Isbn13 isbnData = new Isbn13(context.getIsbn());
+    private Optional<BookData<Isbn10>> getFromSearchParam(final Context context) {
+        if (context.getIsbn().length() == 10) {
+            Isbn10 isbnData = new Isbn10(context.getIsbn());
             return Optional.of(BookData.of(isbnData, DataSource.SEARCH));
+
         }
         return Optional.empty();
     }
 
-    private Optional<BookData<Isbn13>> getGoodReads(final Context context) {
+    private Optional<BookData<Isbn10>> getGoodReads(final Context context) {
         return context.getGoodReadsResponse()
-                .map(xmlDocument -> xmlDocument.getValueAsString("/GoodreadsResponse/book/isbn13"))
+                .map(xmlDocument -> xmlDocument.getValueAsString("/GoodreadsResponse/book/isbn"))
                 .filter(StringUtils::isNotBlank)
-                .map(Isbn13::new)
-                .map(isbn13 -> BookData.of(isbn13, DataSource.GOOD_READS));
+                .map(Isbn10::new)
+                .map(isbn10 -> BookData.of(isbn10, DataSource.GOOD_READS));
     }
 
-    private Optional<BookData<Isbn13>> getGoogleBooks(final Context context) {
+    private Optional<BookData<Isbn10>> getGoogleBooks(final Context context) {
         int count = 0;
 
         while (true) {
@@ -59,14 +61,14 @@ public class Isbn13Layer implements Layer {
                         String type = jsonNode.at(
                                 String.format("/volumeInfo/industryIdentifiers/%d/type", currentCount))
                                 .textValue();
-                        return StringUtils.equals("ISBN_13", type);
+                        return StringUtils.equals("ISBN_10", type);
                     })
                     .map(jsonNode -> jsonNode.at(
                             String.format("/volumeInfo/industryIdentifiers/%d/identifier", currentCount))
                             .textValue());
 
             if (isbnValue.isPresent()) {
-                Isbn13 isbn = new Isbn13(isbnValue.get());
+                Isbn10 isbn = new Isbn10(isbnValue.get());
                 return Optional.of(BookData.of(isbn, DataSource.GOOGLE_BOOKS));
             }
 
@@ -75,11 +77,11 @@ public class Isbn13Layer implements Layer {
         return Optional.empty();
     }
 
-    private Optional<BookData<Isbn13>> getOpenLibrary(final Context context) {
+    private Optional<BookData<Isbn10>> getOpenLibrary(final Context context) {
         return context.getOpenLibrarySearchResponse()
-                .map(jsonNode -> jsonNode.at("/details/isbn_13/0").textValue())
+                .map(jsonNode -> jsonNode.at("/details/isbn_10/0").textValue())
                 .filter(StringUtils::isNotBlank)
-                .map(Isbn13::new)
-                .map(isbn13 -> BookData.of(isbn13, DataSource.OPEN_LIBRARY));
+                .map(Isbn10::new)
+                .map(isbn10 -> BookData.of(isbn10, DataSource.OPEN_LIBRARY));
     }
 }

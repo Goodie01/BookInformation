@@ -1,16 +1,20 @@
-package org.goodiemania.books.layers;
+package org.goodiemania.books.layers.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.context.Context;
+import org.goodiemania.books.layers.BookInformation;
+import org.goodiemania.books.layers.GoodReadsLayer;
+import org.goodiemania.books.layers.Layer;
+import org.goodiemania.books.services.xml.XmlDocument;
 import org.goodiemania.models.books.BookData;
 import org.goodiemania.models.books.DataSource;
 import org.goodiemania.models.books.Title;
 
 
-public class TitleLayer implements Layer {
+public class TitleLayer implements Layer, GoodReadsLayer {
     @Override
     public void apply(final Context context) {
         List<BookData<Title>> titleList = new ArrayList<>();
@@ -24,6 +28,16 @@ public class TitleLayer implements Layer {
                 LayerHelper.processBookData(titleList, setBookData));
 
         context.getBookInformation().setTitle(titleList);
+    }
+
+    @Override
+    public void applyGoodReads(final BookInformation bookInformation, final XmlDocument document) {
+        Optional.of(document)
+                .map(xmlDocument -> xmlDocument.getValueAsString("/GoodreadsResponse/book/title"))
+                .map(StringUtils::trim)
+                .filter(StringUtils::isNotBlank)
+                .map(Title::of)
+                .ifPresent(bookInformation::setTitle);
     }
 
     private Optional<BookData<Title>> getGood(final Context context) {
