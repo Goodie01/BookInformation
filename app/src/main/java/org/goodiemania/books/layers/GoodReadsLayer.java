@@ -11,5 +11,5 @@ public interface GoodReadsLayer {
      *
      * @param document XML document representing the Good Reads response
      */
-    void applyGoodReads(final BookInformation bookInformation, final XmlDocument document);
+    void applyGoodReads(final NewBookInformation bookInformation, final XmlDocument document);
 }

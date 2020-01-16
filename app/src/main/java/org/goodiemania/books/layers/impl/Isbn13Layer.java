@@ -1,29 +1,23 @@
 package org.goodiemania.books.layers.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.context.Context;
-import org.goodiemania.books.layers.Layer;
+import org.goodiemania.books.layers.GoodReadsLayer;
+import org.goodiemania.books.layers.NewBookInformation;
+import org.goodiemania.books.services.xml.XmlDocument;
 import org.goodiemania.models.books.BookData;
 import org.goodiemania.models.books.DataSource;
 import org.goodiemania.models.books.Isbn13;
 
-public class Isbn13Layer implements Layer {
+public class Isbn13Layer implements GoodReadsLayer {
     @Override
-    public void apply(final Context context) {
-        List<BookData<Isbn13>> descrList = new ArrayList<>();
-        getGoodReads(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(descrList, setBookData));
-        getGoogleBooks(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(descrList, setBookData));
-        getOpenLibrary(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(descrList, setBookData));
-        getFromSearchParam(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(descrList, setBookData));
-
-        context.getBookInformation().setIsbn13(descrList);
+    public void applyGoodReads(final NewBookInformation bookInformation, final XmlDocument document) {
+        Optional.of(document)
+                .map(xmlDocument -> xmlDocument.getValueAsString("/GoodreadsResponse/book/isbn13"))
+                .filter(StringUtils::isNotBlank)
+                .map(Isbn13::new)
+                .ifPresent(bookInformation::setIsbn13);
     }
 
     private Optional<BookData<Isbn13>> getFromSearchParam(final Context context) {
@@ -32,14 +26,6 @@ public class Isbn13Layer implements Layer {
             return Optional.of(BookData.of(isbnData, DataSource.SEARCH));
         }
         return Optional.empty();
-    }
-
-    private Optional<BookData<Isbn13>> getGoodReads(final Context context) {
-        return context.getGoodReadsResponse()
-                .map(xmlDocument -> xmlDocument.getValueAsString("/GoodreadsResponse/book/isbn13"))
-                .filter(StringUtils::isNotBlank)
-                .map(Isbn13::new)
-                .map(isbn13 -> BookData.of(isbn13, DataSource.GOOD_READS));
     }
 
     private Optional<BookData<Isbn13>> getGoogleBooks(final Context context) {

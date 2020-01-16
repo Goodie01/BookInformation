@@ -7,7 +7,7 @@ import org.goodiemania.models.books.Isbn10;
 import org.goodiemania.models.books.Isbn13;
 import org.goodiemania.models.books.Title;
 
-public class BookInformation {
+public class NewBookInformation {
     private Title title;
     private Set<Author> authors;
     private String description;

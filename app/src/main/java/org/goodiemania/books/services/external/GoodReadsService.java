@@ -1,5 +1,6 @@
 package org.goodiemania.books.services.external;
 
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.services.http.HttpRequestService;
 import org.goodiemania.books.services.http.HttpServiceResponse;
@@ -37,22 +38,22 @@ public class GoodReadsService {
      * @param isbn isbn to send to Good Reads
      * @return A XMLDocument representing the return value
      */
-    public XmlDocument getBookInfoByIsbn(final String isbn) {
+    public Optional<XmlDocument> getBookInfoByIsbn(final String isbn) {
         String uriString = String.format("https://www.goodreads.com/book/isbn/%s?format=xml&key=%s",
                 isbn, goodReadsKey);
         HttpServiceResponse httpServiceResponse = httpClient.get(uriString, true);
         String response = stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse());
 
         if (httpServiceResponse.getStatus() != 200) {
-            return null;
+            return Optional.empty();
         }
 
         XmlDocument resultDocument = xmlProcessingService.parse(response);
 
         if (StringUtils.isNotBlank(resultDocument.getValueAsString("/error"))) {
-            return null;
+            return Optional.empty();
         }
 
-        return resultDocument;
+        return Optional.of(resultDocument);
     }
 }

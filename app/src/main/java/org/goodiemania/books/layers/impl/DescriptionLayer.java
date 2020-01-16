@@ -1,33 +1,18 @@
 package org.goodiemania.books.layers.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.goodiemania.books.context.Context;
-import org.goodiemania.books.layers.Layer;
+import org.goodiemania.books.layers.GoodReadsLayer;
+import org.goodiemania.books.layers.NewBookInformation;
+import org.goodiemania.books.services.xml.XmlDocument;
 import org.goodiemania.models.books.BookData;
-import org.goodiemania.models.books.DataSource;
 
-public class DescriptionLayer implements Layer {
+public class DescriptionLayer implements GoodReadsLayer {
     @Override
-    public void apply(final Context context) {
-        List<BookData<String>> descrList = new ArrayList<>();
-        getGood(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(descrList, setBookData));
-        getGoogle(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(descrList, setBookData));
-        getOpenLib(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(descrList, setBookData));
-        getLibThing(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(descrList, setBookData));
-
-        context.getBookInformation().setDescription(descrList);
-    }
-
-    private Optional<BookData<String>> getGood(final Context context) {
-        return context.getGoodReadsResponse()
+    public void applyGoodReads(final NewBookInformation bookInformation, final XmlDocument document) {
+        Optional.of(document)
                 .map(goodReadsResponse -> goodReadsResponse.getValueAsString("/GoodreadsResponse/book/description"))
-                .map(s -> BookData.of(s, DataSource.GOOD_READS));
+                .ifPresent(bookInformation::setDescription);
     }
 
     //TODO write me.

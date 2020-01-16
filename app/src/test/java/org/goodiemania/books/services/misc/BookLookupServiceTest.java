@@ -43,7 +43,6 @@ class BookLookupServiceTest {
 
     @Test
     public void test() {
-        bookLookupService.byIsbn("9781934623497")
-                .orElseThrow();
+        bookLookupService.byIsbn("9781934623497");
     }
 }

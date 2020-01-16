@@ -1,38 +1,24 @@
 package org.goodiemania.books.layers.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.goodiemania.books.context.Context;
-import org.goodiemania.books.layers.Layer;
+import org.goodiemania.books.layers.GoodReadsLayer;
+import org.goodiemania.books.layers.NewBookInformation;
+import org.goodiemania.books.services.xml.XmlDocument;
 import org.goodiemania.models.books.Author;
 import org.goodiemania.models.books.BookData;
 import org.goodiemania.models.books.DataSource;
 import org.w3c.dom.NodeList;
 
-public class AuthorLayer implements Layer {
+public class AuthorLayer implements GoodReadsLayer {
     @Override
-    public void apply(final Context context) {
-        List<BookData<Set<Author>>> authorList = new ArrayList<>();
-        getGood(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(authorList, setBookData));
-        getGoogle(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(authorList, setBookData));
-        getOpenLib(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(authorList, setBookData));
-        getLibThing(context).ifPresent(setBookData ->
-                LayerHelper.processBookData(authorList, setBookData));
-
-        context.getBookInformation().setAuthors(authorList);
-    }
-
-    private Optional<BookData<Set<Author>>> getGood(final Context context) {
-        return context.getGoodReadsResponse()
+    public void applyGoodReads(final NewBookInformation bookInformation, final XmlDocument document) {
+        Optional.of(document)
                 .map(xmlDocument -> {
                     final Set<Author> authors = new HashSet<>();
                     NodeList nodeList = xmlDocument.getValue("/GoodreadsResponse/book/authors/author");
@@ -48,7 +34,7 @@ public class AuthorLayer implements Layer {
                     return authors;
                 })
                 .filter(authorSet -> !authorSet.isEmpty())
-                .map(authors -> BookData.of(authors, DataSource.GOOD_READS));
+                .ifPresent(bookInformation::setAuthors);
     }
 
     private Optional<BookData<Set<Author>>> getGoogle(final Context context) {

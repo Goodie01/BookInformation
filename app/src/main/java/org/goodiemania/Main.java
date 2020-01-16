@@ -49,9 +49,10 @@ public class Main {
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        AuthorizedUserDao authorizedUserDao = new AuthorizedUserDao(getMysqlDataSource());
+        //DataSource mysqlDataSource = getMysqlDataSource();
+        AuthorizedUserDao authorizedUserDao = new AuthorizedUserDao("jdbc:sqlite:mainDatabase");
         authorizedUserDao.createTables();
-        StoredHttpRequestDao storedHttpRequestDao = new StoredHttpRequestDao(getMysqlDataSource());
+        StoredHttpRequestDao storedHttpRequestDao = new StoredHttpRequestDao("jdbc:sqlite:mainDatabase");
         storedHttpRequestDao.createTables();
 
         TimerService timerService = new TimerService();
@@ -87,7 +88,10 @@ public class Main {
 
     private static DataSource getMysqlDataSource() {
         MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setUrl(JDBC_MYSQL + Properties.DB_HOST.get() + ":" + Properties.DB_PORT.get() + "/" + Properties.DB_DATABASE.get());
+        String dbHost = Properties.DB_HOST.get().orElseThrow();
+        String dbPost = Properties.DB_PORT.get().orElseThrow();
+        String dbName = Properties.DB_DATABASE.get().orElseThrow();
+        dataSource.setUrl(JDBC_MYSQL + dbHost + ":" + dbPost + "/" + dbName);
         try {
             dataSource.setUser(Properties.DB_USER.get().orElseThrow());
             dataSource.setPassword(Properties.DB_PASSWORD.get().orElseThrow());

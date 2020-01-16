@@ -67,13 +67,7 @@ public class JavalinWrapper {
             return;
         }
 
-        bookLookupService.byIsbn(searchTerm)
-                .ifPresentOrElse(
-                        ctx::json,
-                        () -> {
-                            ctx.status(404);
-                            ctx.json("Unable to find said book");
-                        });
+        ctx.json(bookLookupService.byIsbn(searchTerm));
     }
 
     private AccessManager checkAuthorization() {
