@@ -1,5 +1,6 @@
 package org.goodiemania.books.services.external;
 
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.services.http.HttpRequestService;
 import org.goodiemania.books.services.http.HttpServiceResponse;
@@ -37,42 +38,26 @@ public class LibraryThingService {
      * @param isbn isbn to send to Library Thing api
      * @return A XMLDocument representing the return value
      */
-    public XmlDocument getBookInfoByIsbn(final String isbn) {
+    public Optional<XmlDocument> getBookInfoByIsbn(final String isbn) {
         String uriString = String.format("https://www.librarything.com"
                         + "/services/rest/1.1/?method=librarything.ck.getwork&isbn=%s&apikey=%s",
                 isbn, developerKey);
         HttpServiceResponse httpServiceResponse = httpClient.get(uriString, true);
 
         if (httpServiceResponse.getStatus() != 200) {
-            return null;
+            return Optional.empty();
         }
 
         if (StringUtils.isBlank(httpServiceResponse.getResponse())) {
-            return null;
+            return Optional.empty();
         }
 
         XmlDocument parse = xmlProcessingService.parse(stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse()));
 
         if (StringUtils.isNotBlank(parse.getValueAsString("/response/err"))) {
-            return null;
+            return Optional.empty();
         }
 
-        return parse;
-    }
-
-    /**
-     * Sends a request to the Library Thing author API, returns the result.
-     *
-     * @param id ID of the author to send to the Library Thing API
-     * @return A XML Document representing the return value
-     */
-    public XmlDocument getAuthorById(final String id) {
-        String uriString = String.format("https://www.librarything.com"
-                        + "/services/rest/1.1/?method=librarything.ck.getauthor&id=%s&apikey=%s",
-                id, developerKey);
-        HttpServiceResponse httpServiceResponse = httpClient.get(uriString, true);
-        String response = stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse());
-
-        return xmlProcessingService.parse(response);
+        return Optional.of(parse);
     }
 }

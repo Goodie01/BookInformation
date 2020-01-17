@@ -1,9 +1,9 @@
 package org.goodiemania.books.layers;
 
-import org.goodiemania.books.services.xml.XmlDocument;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.goodiemania.models.books.BookInformation;
 
-public interface GoodReadsLayer {
+public interface GoogleBooksLayer {
     /**
      * Each layer should update or focus on a single attribute of the book.
      * this method is the entry point where our service interacts with the layer
@@ -13,5 +13,5 @@ public interface GoodReadsLayer {
      * @param bookInformation book information object to mutate
      * @param document        XML document representing the Good Reads response
      */
-    void applyGoodReads(final BookInformation bookInformation, final XmlDocument document);
+    void applyGoogleBooks(final BookInformation bookInformation, final JsonNode document);
 }

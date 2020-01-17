@@ -1,20 +1,20 @@
 package org.goodiemania.books;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.goodiemania.books.context.Context;
 import org.goodiemania.books.layers.GoodReadsLayer;
-import org.goodiemania.books.layers.NewBookInformation;
+import org.goodiemania.books.layers.GoogleBooksLayer;
+import org.goodiemania.books.layers.LibraryThingLayer;
+import org.goodiemania.books.layers.OpenLibraryLayer;
 import org.goodiemania.books.services.external.GoodReadsService;
 import org.goodiemania.books.services.external.GoogleBooksService;
 import org.goodiemania.books.services.external.LibraryThingService;
 import org.goodiemania.books.services.external.OpenLibraryService;
-import org.goodiemania.books.services.xml.XmlDocument;
+import org.goodiemania.models.books.BookInformation;
+import org.goodiemania.models.books.DataSource;
 import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 
@@ -25,6 +25,9 @@ public class BookLookupService {
     private final GoogleBooksService googleBooksService;
 
     private final List<GoodReadsLayer> goodReadsLayers;
+    private final List<LibraryThingLayer> libraryThingLayers;
+    private final List<GoogleBooksLayer> googleBookLayers;
+    private final List<OpenLibraryLayer> openLibraryLayers;
 
 
     /**
@@ -46,11 +49,13 @@ public class BookLookupService {
 
         Reflections reflections = new Reflections("org.goodiemania.books.layers");
         goodReadsLayers = getClassInstances(reflections, GoodReadsLayer.class);
+        libraryThingLayers = getClassInstances(reflections, LibraryThingLayer.class);
+        googleBookLayers = getClassInstances(reflections, GoogleBooksLayer.class);
+        openLibraryLayers = getClassInstances(reflections, OpenLibraryLayer.class);
     }
 
     @NotNull
     private <T> List<T> getClassInstances(final Reflections reflections, Class<T> classInfo) {
-        //Class<Layer> classInfo = Layer.class;
         return reflections
                 .getSubTypesOf(classInfo)
                 .stream()
@@ -72,42 +77,37 @@ public class BookLookupService {
      * @param isbn String isbn
      * @return Optional possibly containing the found information
      */
-    public List<NewBookInformation> byIsbn(final String isbn) {
-        List<NewBookInformation> newBookInformation = new ArrayList<>();
-        goodReadsService.getBookInfoByIsbn(isbn)
-                .map(xmlDocument -> {
-                    NewBookInformation bookInformation = new NewBookInformation();
-                    goodReadsLayers.forEach(goodReadsLayer -> {
-                        goodReadsLayer.applyGoodReads(bookInformation, xmlDocument);
-                    });
-                    return bookInformation;
-                })
-                .ifPresent(newBookInformation::add);
-        return newBookInformation;
+    public List<BookInformation> byIsbn(final String isbn) {
+        List<BookInformation> bookInfoList = new ArrayList<>();
+
+        goodReadsService.getBookInfoByIsbn(isbn).map(document -> doTheThing(
+                DataSource.GOOD_READS, document, goodReadsLayers,
+                (givenDocument, layer, bookInfo) -> layer.applyGoodReads(bookInfo, givenDocument)))
+                .ifPresent(bookInfoList::add);
+        libraryThingService.getBookInfoByIsbn(isbn).map(document -> doTheThing(
+                DataSource.LIBRARY_THING, document, libraryThingLayers,
+                (givenDocument, layer, bookInfo) -> layer.applyLibraryThing(bookInfo, givenDocument)))
+                .ifPresent(bookInfoList::add);
+        googleBooksService.getBookInfoByIsbn(isbn).map(document -> doTheThing(
+                DataSource.GOOGLE_BOOKS, document, googleBookLayers,
+                (givenDocument, layer, bookInfo) -> layer.applyGoogleBooks(bookInfo, givenDocument)))
+                .ifPresent(bookInfoList::add);
+        openLibraryService.getBookInfoByIsbn(isbn).map(document -> doTheThing(
+                DataSource.OPEN_LIBRARY, document, openLibraryLayers,
+                (givenDocument, layer, bookInfo) -> layer.applyOpenLibrary(bookInfo, givenDocument)))
+                .ifPresent(bookInfoList::add);
+
+        return bookInfoList;
     }
 
-    private Optional<Context> createContext(final String isbn) {
+    private <T, U> BookInformation doTheThing(
+            final DataSource source,
+            final T document,
+            final List<U> layers,
+            final TriConsumer<T, U, BookInformation> consumer) {
+        BookInformation bookInformation = BookInformation.fromSource(source);
+        layers.forEach(layer -> consumer.accept(document, layer, bookInformation));
 
-        XmlDocument libraryThingResponse = libraryThingService.getBookInfoByIsbn(isbn);
-        XmlDocument libraryThingAuthorResponse = Optional.ofNullable(libraryThingResponse)
-                .map(document -> document.getValueAsString("/response/ltml/item/author/@id"))
-                .map(libraryThingService::getAuthorById)
-                .orElse(null);
-        JsonNode googleBooksResponse = googleBooksService.getBookInfoByIsbn(isbn);
-        JsonNode openLibraryResponse = openLibraryService.getBookInfoByIsbn(isbn);
-
-        if (openLibraryResponse == null
-                && libraryThingResponse == null
-                && googleBooksResponse == null) {
-            return Optional.empty();
-        }
-
-        return Optional.of(Context.build()
-                .setIsbn(isbn)
-                .setOpenLibraryResponse(openLibraryResponse)
-                .setLibraryThingResponse(libraryThingResponse)
-                .setLibraryThingAuthor(libraryThingAuthorResponse)
-                .setGoogleBooksResponse(googleBooksResponse)
-                .build());
+        return bookInformation;
     }
 }

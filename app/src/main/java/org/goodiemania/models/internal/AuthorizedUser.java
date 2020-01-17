@@ -1,4 +1,4 @@
-package org.goodiemania.models.api;
+package org.goodiemania.models.internal;
 
 public class AuthorizedUser {
     private String authorizationKey;

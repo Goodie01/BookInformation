@@ -1,4 +1,4 @@
-package org.goodiemania.models;
+package org.goodiemania;
 
 import java.io.FileReader;
 import java.io.IOException;

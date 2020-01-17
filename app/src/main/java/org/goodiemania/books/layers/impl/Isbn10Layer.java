@@ -1,18 +1,18 @@
 package org.goodiemania.books.layers.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
-import org.goodiemania.books.context.Context;
 import org.goodiemania.books.layers.GoodReadsLayer;
-import org.goodiemania.books.layers.NewBookInformation;
+import org.goodiemania.books.layers.GoogleBooksLayer;
+import org.goodiemania.books.layers.OpenLibraryLayer;
 import org.goodiemania.books.services.xml.XmlDocument;
-import org.goodiemania.models.books.BookData;
-import org.goodiemania.models.books.DataSource;
+import org.goodiemania.models.books.BookInformation;
 import org.goodiemania.models.books.Isbn10;
 
-public class Isbn10Layer implements GoodReadsLayer {
+public class Isbn10Layer implements GoodReadsLayer, GoogleBooksLayer, OpenLibraryLayer {
     @Override
-    public void applyGoodReads(final NewBookInformation bookInformation, final XmlDocument document) {
+    public void applyGoodReads(final BookInformation bookInformation, final XmlDocument document) {
         Optional.of(document)
                 .map(xmlDocument -> xmlDocument.getValueAsString("/GoodreadsResponse/book/isbn"))
                 .filter(StringUtils::isNotBlank)
@@ -20,29 +20,21 @@ public class Isbn10Layer implements GoodReadsLayer {
                 .ifPresent(bookInformation::setIsbn10);
     }
 
-    private Optional<BookData<Isbn10>> getFromSearchParam(final Context context) {
-        if (context.getIsbn().length() == 10) {
-            Isbn10 isbnData = new Isbn10(context.getIsbn());
-            return Optional.of(BookData.of(isbnData, DataSource.SEARCH));
-
-        }
-        return Optional.empty();
-    }
-
-    private Optional<BookData<Isbn10>> getGoogleBooks(final Context context) {
+    @Override
+    public void applyGoogleBooks(final BookInformation bookInformation, final JsonNode document) {
         int count = 0;
 
         while (true) {
             int currentCount = count;
-            Boolean noIdentifierFound = context.getGoogleBooksResponse()
+            Boolean noIdentifierFound = Optional.of(document)
                     .map(jsonNode -> jsonNode.at(
                             String.format("/volumeInfo/industryIdentifiers/%d", currentCount)).isEmpty())
                     .orElse(true);
             if (noIdentifierFound) {
-                break;
+                return;
             }
 
-            Optional<String> isbnValue = context.getGoogleBooksResponse()
+            Optional<String> isbnValue = Optional.of(document)
                     .filter(jsonNode -> {
                         String type = jsonNode.at(
                                 String.format("/volumeInfo/industryIdentifiers/%d/type", currentCount))
@@ -54,20 +46,20 @@ public class Isbn10Layer implements GoodReadsLayer {
                             .textValue());
 
             if (isbnValue.isPresent()) {
-                Isbn10 isbn = new Isbn10(isbnValue.get());
-                return Optional.of(BookData.of(isbn, DataSource.GOOGLE_BOOKS));
+                bookInformation.setIsbn10(new Isbn10(isbnValue.get()));
+                return;
             }
 
             count++;
         }
-        return Optional.empty();
     }
 
-    private Optional<BookData<Isbn10>> getOpenLibrary(final Context context) {
-        return context.getOpenLibrarySearchResponse()
+    @Override
+    public void applyOpenLibrary(final BookInformation bookInformation, final JsonNode document) {
+        Optional.of(document)
                 .map(jsonNode -> jsonNode.at("/details/isbn_10/0").textValue())
                 .filter(StringUtils::isNotBlank)
                 .map(Isbn10::new)
-                .map(isbn10 -> BookData.of(isbn10, DataSource.OPEN_LIBRARY));
+                .ifPresent(bookInformation::setIsbn10);
     }
 }

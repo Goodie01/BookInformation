@@ -2,7 +2,7 @@ package org.goodiemania.dao;
 
 import java.util.Optional;
 import javax.sql.DataSource;
-import org.goodiemania.models.api.AuthorizedUser;
+import org.goodiemania.models.internal.AuthorizedUser;
 import org.jdbi.v3.core.Jdbi;
 
 public class AuthorizedUserDao {

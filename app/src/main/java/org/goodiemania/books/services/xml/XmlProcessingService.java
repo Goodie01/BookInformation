@@ -21,7 +21,9 @@ public class XmlProcessingService {
     public XmlProcessingService() {
         try {
             this.xpathFactory = XPathFactory.newInstance().newXPath();
-            this.builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setCoalescing(true);
+            this.builder = documentBuilderFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
             throw new IllegalStateException(e);
         }

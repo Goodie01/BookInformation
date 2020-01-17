@@ -1,22 +1,22 @@
 package org.goodiemania.books.layers.impl;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
-import org.goodiemania.books.context.Context;
 import org.goodiemania.books.layers.GoodReadsLayer;
-import org.goodiemania.books.layers.NewBookInformation;
+import org.goodiemania.books.layers.GoogleBooksLayer;
+import org.goodiemania.books.layers.OpenLibraryLayer;
 import org.goodiemania.books.services.xml.XmlDocument;
-import org.goodiemania.models.books.BookData;
-import org.goodiemania.models.books.DataSource;
+import org.goodiemania.models.books.BookInformation;
 import org.goodiemania.models.books.Image;
 
 /**
  * Created by Macro303 on 2020-Jan-06.
  */
-public class ImageLayer implements GoodReadsLayer {
+public class ImageLayer implements GoodReadsLayer, GoogleBooksLayer, OpenLibraryLayer {
     @Override
-    public void applyGoodReads(final NewBookInformation bookInformation, final XmlDocument document) {
+    public void applyGoodReads(final BookInformation bookInformation, final XmlDocument document) {
         Optional.of(document)
                 .map(xmlDocument -> {
                     var imageUrl = xmlDocument.getValueAsString("/GoodreadsResponse/book/image_url");
@@ -41,19 +41,23 @@ public class ImageLayer implements GoodReadsLayer {
         return url.replace(matcher.group(1), id);
     }
 
-    private Optional<BookData<Image>> getGoogle(final Context context) {
-        return context.getGoogleBooksResponse()
+    @Override
+    public void applyGoogleBooks(final BookInformation bookInformation, final JsonNode document) {
+        Optional.of(document)
                 .map(jsonNode -> jsonNode.at("/volumeInfo/imageLinks/thumbnail").textValue())
                 .map(StringUtils::trim)
                 .filter(StringUtils::isNotBlank)
-                .map(s -> BookData.of(new Image(s), DataSource.GOOGLE_BOOKS));
+                .map(Image::new)
+                .ifPresent(bookInformation::setImage);
     }
 
-    private Optional<BookData<Image>> getOpenLib(final Context context) {
-        return context.getOpenLibrarySearchResponse()
+    @Override
+    public void applyOpenLibrary(final BookInformation bookInformation, final JsonNode document) {
+        Optional.of(document)
                 .map(jsonNode -> jsonNode.at("/thumnail_url").textValue())
                 .map(StringUtils::trim)
                 .filter(StringUtils::isNotBlank)
-                .map(s -> BookData.of(new Image(s), DataSource.OPEN_LIBRARY));
+                .map(Image::new)
+                .ifPresent(bookInformation::setImage);
     }
 }

@@ -8,9 +8,12 @@ import io.javalin.Javalin;
 import io.javalin.core.security.AccessManager;
 import io.javalin.http.Context;
 import io.javalin.plugin.json.JavalinJackson;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.BookLookupService;
 import org.goodiemania.dao.AuthorizedUserDao;
+import org.goodiemania.models.BookResponse;
+import org.goodiemania.models.books.BookInformation;
 
 public class JavalinWrapper {
     private final BookLookupService bookLookupService;
@@ -41,7 +44,8 @@ public class JavalinWrapper {
             config.defaultContentType = "application/json";
             config.enableCorsForAllOrigins();
 
-            config.accessManager(checkAuthorization());
+            AccessManager accessManager = createAccessmanager();
+            config.accessManager(accessManager);
         });
 
         JavalinJackson.configure(objectMapper);
@@ -67,10 +71,11 @@ public class JavalinWrapper {
             return;
         }
 
-        ctx.json(bookLookupService.byIsbn(searchTerm));
+        List<BookInformation> bookResponse = bookLookupService.byIsbn(searchTerm);
+        ctx.json(BookResponse.of(bookResponse));
     }
 
-    private AccessManager checkAuthorization() {
+    private AccessManager createAccessmanager() {
         return (handler, ctx, permittedRoles) -> {
             String authorizationCode = ctx.header("authorization");
             authorizedUserDao.getByKey(authorizationCode)

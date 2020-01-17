@@ -31,7 +31,7 @@ public class GoogleBooksService {
      * @param isbn isbn to send to the Google Books API
      * @return A JsonNode representing the return value
      */
-    public JsonNode getBookInfoByIsbn(final String isbn) {
+    public Optional<JsonNode> getBookInfoByIsbn(final String isbn) {
         String uriString = String.format(
                 "https://www.googleapis.com/books/v1/volumes?q=isbn:%s&key=%s",
                 isbn, developerKey);
@@ -40,7 +40,7 @@ public class GoogleBooksService {
 
         try {
             //TODO we should iterate and find all the results
-            return readValue(httpServiceResponse.getResponse())
+            JsonNode jsonNodeValue = readValue(httpServiceResponse.getResponse())
                     .map(jsonNode -> jsonNode.get("items"))
                     .map(jsonNode -> jsonNode.get(0))
                     .map(jsonNode -> jsonNode.get("selfLink"))
@@ -48,9 +48,10 @@ public class GoogleBooksService {
                     .map(individualSearchResultUri -> httpClient.get(individualSearchResultUri, true))
                     .flatMap((HttpServiceResponse value) -> readValue(value.getResponse()))
                     .orElse(null);
+            return Optional.ofNullable(jsonNodeValue);
         } catch (IllegalStateException e) {
             //TODO log exception
-            return null;
+            return Optional.empty();
         }
     }
 

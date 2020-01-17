@@ -6,18 +6,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import org.goodiemania.books.context.Context;
 import org.goodiemania.books.layers.GoodReadsLayer;
-import org.goodiemania.books.layers.NewBookInformation;
+import org.goodiemania.books.layers.GoogleBooksLayer;
+import org.goodiemania.books.layers.LibraryThingLayer;
+import org.goodiemania.books.layers.OpenLibraryLayer;
 import org.goodiemania.books.services.xml.XmlDocument;
 import org.goodiemania.models.books.Author;
-import org.goodiemania.models.books.BookData;
-import org.goodiemania.models.books.DataSource;
+import org.goodiemania.models.books.BookInformation;
 import org.w3c.dom.NodeList;
 
-public class AuthorLayer implements GoodReadsLayer {
+public class AuthorLayer implements GoodReadsLayer, LibraryThingLayer, GoogleBooksLayer, OpenLibraryLayer {
     @Override
-    public void applyGoodReads(final NewBookInformation bookInformation, final XmlDocument document) {
+    public void applyGoodReads(final BookInformation bookInformation, final XmlDocument document) {
         Optional.of(document)
                 .map(xmlDocument -> {
                     final Set<Author> authors = new HashSet<>();
@@ -37,10 +37,10 @@ public class AuthorLayer implements GoodReadsLayer {
                 .ifPresent(bookInformation::setAuthors);
     }
 
-    private Optional<BookData<Set<Author>>> getGoogle(final Context context) {
-        return context.getGoogleBooksResponse()
+    @Override
+    public void applyGoogleBooks(final BookInformation bookInformation, final JsonNode document) {
+        Optional.of(document)
                 .map(jsonNode -> {
-
                     final Set<Author> authors = new HashSet<>();
                     final Iterator<Map.Entry<String, JsonNode>> fields =
                             jsonNode.path("volumeInfo").path("authors").fields();
@@ -53,13 +53,21 @@ public class AuthorLayer implements GoodReadsLayer {
                     return authors;
                 })
                 .filter(authorSet -> !authorSet.isEmpty())
-                .map(authors -> BookData.of(authors, DataSource.GOOGLE_BOOKS));
+                .ifPresent(bookInformation::setAuthors);
     }
 
-    private Optional<BookData<Set<Author>>> getOpenLib(final Context context) {
-        return context.getOpenLibrarySearchResponse()
-                .map(jsonNode -> {
+    @Override
+    public void applyLibraryThing(final BookInformation bookInformation, final XmlDocument bookDocument) {
+        Optional.of(bookDocument)
+                .map(xmlDocument -> xmlDocument.getValueAsString("/response/ltml/item/author"))
+                .map(s -> Set.of(new Author(s, "")))
+                .ifPresent(bookInformation::setAuthors);
+    }
 
+    @Override
+    public void applyOpenLibrary(final BookInformation bookInformation, final JsonNode document) {
+        Optional.of(document)
+                .map(jsonNode -> {
                     final Set<Author> authors = new HashSet<>();
                     final Iterator<Map.Entry<String, JsonNode>> fields =
                             jsonNode.path("details").path("authors").fields();
@@ -71,15 +79,6 @@ public class AuthorLayer implements GoodReadsLayer {
                     return authors;
                 })
                 .filter(authorSet -> !authorSet.isEmpty())
-                .map(authors -> BookData.of(authors, DataSource.OPEN_LIBRARY));
-    }
-
-    //TODO we might have more luck using the actual library thing author response...
-    private Optional<BookData<Set<Author>>> getLibThing(final Context context) {
-        return context.getLibraryThingAuthor()
-                .map(xmlDocument -> xmlDocument.getValueAsString("/response/ltml/item/author"))
-                .map(s -> BookData.of(
-                        Set.of(new Author(s, "")),
-                        DataSource.LIBRARY_THING));
+                .ifPresent(bookInformation::setAuthors);
     }
 }

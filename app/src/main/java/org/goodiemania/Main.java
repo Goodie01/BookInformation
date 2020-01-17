@@ -20,7 +20,6 @@ import org.goodiemania.books.services.xml.XmlProcessingService;
 import org.goodiemania.dao.AuthorizedUserDao;
 import org.goodiemania.dao.StoredHttpRequestDao;
 import org.goodiemania.javalin.JavalinWrapper;
-import org.goodiemania.models.Properties;
 
 
 /**
@@ -29,8 +28,7 @@ import org.goodiemania.models.Properties;
  * <p>
  * TODO
  * Published date?
- * Description
- * Book format? Eg hard cover, paper back etcq
+ * Book format? Eg hard cover, paper back etc Size?
  * </p>
  */
 public class Main {
