@@ -10,7 +10,7 @@ build:
   only:
     - master
   script:
-    - docker run -it --tty --rm --name my-maven-project -v "$(pwd)/app":/usr/src/mymaven -w /usr/src/mymaven maven:3.6.3-jdk-11 mvn clean package
+    - docker run --tty --rm --name my-maven-project -v "$(pwd)/app":/usr/src/mymaven -w /usr/src/mymaven maven:3.6.3-jdk-11 mvn clean package
   artifacts:
     paths:
       - app/target/bookInformation.jar
