@@ -1,3 +1,7 @@
+
+before_script:
+  - docker info
+
 stages:
   - build
   - deploy
@@ -5,10 +9,8 @@ stages:
 services:
   - docker:dind
 
-before_script:
-  - docker info
-
 build:
+  stage: build
   image: docker:stable
   script:
     - docker run --tty --rm --name my-maven-project -v "$(pwd)/app":/usr/src/mymaven -w /usr/src/mymaven maven:3.6.3-jdk-11 mvn clean package
@@ -16,6 +18,7 @@ build:
     paths:
       - app/target/bookInformation.jar
 deploy:
+  stage: deploy
   only:
     - master
   script:
