@@ -8,11 +8,11 @@
 
 - name: Set up Adopt Open JDK repo
   blockinfile:
-    path: /etc/yum.repos.d
+    path: /etc/yum.repos.d/adoptopenjdk.repo
     block: |
       [AdoptOpenJDK]
       name=AdoptOpenJDK
-      baseurl=http://adoptopenjdk.jfrog.io/adoptopenjdk/rpm/centos/7/$(uname -m)
+      baseurl=http://adoptopenjdk.jfrog.io/adoptopenjdk/rpm/centos/7/x86_64
       enabled=1
       gpgcheck=1
       gpgkey=https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
