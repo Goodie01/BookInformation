@@ -7,9 +7,15 @@
   - "/opt/bookInformation"
 
 - name: Set up Adopt Open JDK repo
-  copy:
-    src: adoptopenjdk.repo
-    dest: /etc/yum.repos.d/
+  blockinfile:
+    path: /etc/yum.repos.d
+    block: |
+      [AdoptOpenJDK]
+      name=AdoptOpenJDK
+      baseurl=http://adoptopenjdk.jfrog.io/adoptopenjdk/rpm/centos/7/$(uname -m)
+      enabled=1
+      gpgcheck=1
+      gpgkey=https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
 
 - name: Install Java
   package:
