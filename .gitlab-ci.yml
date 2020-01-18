@@ -24,4 +24,5 @@ deploy:
     - cp app/target/bookInformation.jar platform
     - cp $PRODUCTION_PROPERTIES platform/default.properties
     - cd platform
+    - ansible-galaxy install -r requirements.yml --roles-path=.galaxy/
     - ansible-playbook deploySite.yml -i staging/production --private-key="$SSH_KEY"
