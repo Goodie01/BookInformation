@@ -7,7 +7,6 @@ build:
   image: maven:3.6.3-jdk-11
   script:
     - mvn --batch-mode -U -Dmaven.repo.local=.m2/repository -f app/pom.xml clean package
-    - ls .m2/
   cache:
     paths:
       - .m2/repository #this path is relative to the current directory, eg, I can't reference /root/.m2, but only project/root/.m2
@@ -23,7 +22,7 @@ deploy:
     - chmod 600 "$SSH_KEY"
     - export ANSIBLE_HOST_KEY_CHECKING=False
     - cp app/target/bookInformation.jar platform
-    - cp $PRODUCTION_PROPERTIES platform
+    - cp "$PRODUCTION_PROPERTIES" platform
     - ls platform
     - cd platform
     - ansible-playbook deploySite.yml -i staging/production --private-key="$SSH_KEY"
