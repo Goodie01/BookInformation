@@ -2,16 +2,13 @@ stages:
   - build
   - deploy
 
-services:
-  - docker:dind
-
 build:
   stage: build
   image: maven:3.6.3-jdk-11
   script:
-    - ls /root/.m2/repository
+    - ls /root/.m2/repository/
     - mvn --batch-mode -U -f app/pom.xml clean package
-    - ls /root/.m2/repository
+    - ls /root/.m2/repository/
   cache:
     paths:
       - /root/.m2/repository
@@ -24,7 +21,7 @@ deploy:
   only:
     - master
   script:
-    - which ssh
+    - chmod 600 "$SSH_KEY"
     - export ANSIBLE_HOST_KEY_CHECKING=False
     - cp app/target/bookInformation.jar platform
     - cp "$PRODUCTION_PROPERTIES" platform
