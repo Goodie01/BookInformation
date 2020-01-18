@@ -24,5 +24,6 @@ deploy:
   script:
     - export ANSIBLE_HOST_KEY_CHECKING=False
     - cp app/target/bookInformation.jar platform
+    - cp "$PRODUCTION_PROPERTIES" platform
     - cd platform
     - ansible-playbook deploySite.yml -i staging/production --private-key="$SSH_KEY"
