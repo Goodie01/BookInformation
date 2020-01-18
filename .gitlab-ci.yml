@@ -6,12 +6,11 @@ build:
   stage: build
   image: maven:3.6.3-jdk-11
   script:
-    - ls /root/.m2/repository/
-    - mvn --batch-mode -U -f app/pom.xml clean package
-    - ls /root/.m2/repository/
+    - mvn --batch-mode -U -s .m2/settings.xml -f app/pom.xml clean package
+    - ls .m2/
   cache:
     paths:
-      - /root/.m2/repository
+      - .m2/repository #this path is relative to the current directory, eg, I can't reference /root/.m2, but only project/root/.m2
   artifacts:
     paths:
       - app/target/bookInformation.jar

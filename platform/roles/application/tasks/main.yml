@@ -6,16 +6,10 @@
   with_items:
   - "/opt/bookInformation"
 
-- name: Set up Adopt Open JDK repo
-  blockinfile:
-    path: /etc/yum.repos.d/adoptopenjdk.repo
-    block: |
-      [AdoptOpenJDK]
-      name=AdoptOpenJDK
-      baseurl=http://adoptopenjdk.jfrog.io/adoptopenjdk/rpm/centos/7/x86_64
-      enabled=1
-      gpgcheck=1
-      gpgkey=https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
+- name: Copy Adopt Open JDK repo file
+  copy:
+    src: adoptopenjdk.repo
+    dest: /etc/yum.repos.d/adoptopenjdk.repo
 
 - name: Install Java
   package:
@@ -24,7 +18,7 @@
   with_items:
     - adoptopenjdk-11-openj9
 
-- name: Copy astraeus jar file
+- name: Copy Book Information jar file
   copy:
     src: "bookInformation.jar"
     dest: /opt/bookInformation/bookInformation.jar
