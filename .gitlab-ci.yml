@@ -9,17 +9,18 @@ build:
   stage: build
   image: maven:3.6.3-jdk-11
   script:
-    - ls /root/.m2
+    - ls /root/.m2/repository
     - mvn --batch-mode -U -f app/pom.xml clean package
+    - ls /root/.m2/repository
   cache:
     paths:
-      - /root/.m2
+      - /root/.m2/repository
   artifacts:
     paths:
       - app/target/bookInformation.jar
 deploy:
   stage: deploy
-  image: cytopia/ansible:2.9
+  image: cytopia/ansible:2.9-tools
   only:
     - master
   script:
