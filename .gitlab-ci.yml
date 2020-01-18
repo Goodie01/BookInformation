@@ -19,8 +19,9 @@ deploy:
   only:
     - master
   script:
-    - chmod 600 "$SSH_KEY"
     - export ANSIBLE_HOST_KEY_CHECKING=False
+    - export ANSIBLE_ROLES_PATH=.galaxy/
+    - chmod 600 "$SSH_KEY"
     - cp app/target/bookInformation.jar platform
     - cp $PRODUCTION_PROPERTIES platform/default.properties
     - cd platform
