@@ -9,6 +9,7 @@ build:
   stage: build
   image: maven:3.6.3-jdk-11
   script:
+    - ls /root/.m2
     - mvn --batch-mode -U -f app/pom.xml clean package
   cache:
     paths:
@@ -22,6 +23,7 @@ deploy:
   only:
     - master
   script:
+    - which ssh
     - export ANSIBLE_HOST_KEY_CHECKING=False
     - cp app/target/bookInformation.jar platform
     - cp "$PRODUCTION_PROPERTIES" platform
