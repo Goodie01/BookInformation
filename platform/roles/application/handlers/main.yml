@@ -1,4 +1,4 @@
 - name: Restart bookInformation
   service:
-    name: astraeus
+    name: bookInformation
     state: restarted
