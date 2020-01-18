@@ -1,0 +1,56 @@
+---
+- name: create directorys
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+  - "/opt/bookInformation"
+
+- name: Set up Adopt Open JDK repo
+  copy:
+    src: adoptopenjdk.repo
+    dest: /etc/yum.repos.d/
+
+- name: Install Java
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - adoptopenjdk-11-openj9
+
+- name: Copy astraeus jar file
+  copy:
+    src: "bookInformation.jar"
+    dest: /opt/bookInformation/bookInformation.jar
+    owner: root
+    group: root
+    mode: 0700
+  notify:
+  - Restart bookInformation
+
+- name: Copy required files
+  copy:
+    src: "{{ item }}"
+    dest: "/opt/bookInformation/{{ item }}"
+    owner: root
+    group: root
+    mode: 0700
+  with_items:
+    - run.sh
+    - default.properties
+  notify:
+  - Restart bookInformation
+
+- name: Create service
+  copy:
+    src: bookInformation.service
+    dest: /usr/lib/systemd/system/
+  notify:
+  - Restart bookInformation
+
+- name: Enable Book Information service
+  service:
+    name: bookInformation
+    enabled: yes
+  notify:
+    - Restart bookInformation

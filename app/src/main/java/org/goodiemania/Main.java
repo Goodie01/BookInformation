@@ -32,8 +32,6 @@ import org.goodiemania.javalin.JavalinWrapper;
  * </p>
  */
 public class Main {
-    private static final String JDBC_MYSQL = "jdbc:mysql://";
-
     /**
      * Main method for invoking the book service (Used for testing).
      *
@@ -47,10 +45,10 @@ public class Main {
                 .registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        //DataSource mysqlDataSource = getMysqlDataSource();
-        AuthorizedUserDao authorizedUserDao = new AuthorizedUserDao("jdbc:sqlite:mainDatabase");
+        DataSource mysqlDataSource = getMysqlDataSource();
+        AuthorizedUserDao authorizedUserDao = new AuthorizedUserDao(mysqlDataSource);
         authorizedUserDao.createTables();
-        StoredHttpRequestDao storedHttpRequestDao = new StoredHttpRequestDao("jdbc:sqlite:mainDatabase");
+        StoredHttpRequestDao storedHttpRequestDao = new StoredHttpRequestDao(mysqlDataSource);
         storedHttpRequestDao.createTables();
 
         TimerService timerService = new TimerService();
@@ -86,14 +84,9 @@ public class Main {
 
     private static DataSource getMysqlDataSource() {
         MysqlDataSource dataSource = new MysqlDataSource();
-        String dbHost = Properties.DB_HOST.get().orElseThrow();
-        String dbPost = Properties.DB_PORT.get().orElseThrow();
-        String dbName = Properties.DB_DATABASE.get().orElseThrow();
-        dataSource.setUrl(JDBC_MYSQL + dbHost + ":" + dbPost + "/" + dbName);
+        dataSource.setUrl(Properties.DB_CONNECTION_STRING.get().orElseThrow());
         try {
-            dataSource.setUser(Properties.DB_USER.get().orElseThrow());
-            dataSource.setPassword(Properties.DB_PASSWORD.get().orElseThrow());
-
+            dataSource.setAllowPublicKeyRetrieval(true);
             dataSource.setAutoReconnect(true);
             dataSource.setUseSSL(false);
             dataSource.setServerTimezone("UTC");

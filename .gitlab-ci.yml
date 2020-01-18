@@ -18,9 +18,11 @@ build:
       - app/target/bookInformation.jar
 deploy:
   stage: deploy
-  image: docker:stable
+  image: cytopia/ansible:2.9
   only:
     - master
   script:
-    - docker run --tty --rm --name my-maven-project -v "$(pwd)/app":/usr/src/mymaven -w /usr/src/mymaven maven:3.6.3-jdk-11 mvn clean package
-#ansible-playbook deploySite.yml -i  --user=ec2-user --private-key=${ssh_key}staging/amiBuilder
+    - export ANSIBLE_HOST_KEY_CHECKING=False
+    - cp app/target/bookInformation.jar platform
+    - cd platform
+    - ansible-playbook deploySite.yml -i staging/production --private-key="$SSH_KEY"

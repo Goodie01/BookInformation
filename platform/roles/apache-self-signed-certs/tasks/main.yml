@@ -1,0 +1,24 @@
+---
+- name: check cert expiration
+  command: openssl x509 -checkend 1209600 -noout -in /opt/ssl/web.cer
+  register: cert_check
+  changed_when: cert_check.rc != 0
+  failed_when: cert_check.stdout_lines|length > 0
+
+- name: create directory
+  file:
+    path: "/opt/ssl"
+    state: directory
+
+- name: Generate a Self Signed OpenSSL certificate
+  command: >
+    openssl req
+    -new
+    -newkey rsa:4096
+    -days 365
+    -nodes
+    -x509
+    -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN={{ front_hostname }}"
+    -keyout /opt/ssl/web.key
+    -out /opt/ssl/web.cer
+  when: cert_check.rc != 0
