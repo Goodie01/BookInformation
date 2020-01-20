@@ -35,6 +35,6 @@
     persistent: yes
 
 - name: Set up file to check stuff
-    copy:
-      src: test
-      dest: /var/www/challenges/
+  copy:
+    src: test
+    dest: /var/www/challenges/
