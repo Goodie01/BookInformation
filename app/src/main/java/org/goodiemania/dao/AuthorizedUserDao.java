@@ -17,8 +17,14 @@ public class AuthorizedUserDao {
     }
 
     public void createTables() {
-        jdbi.useHandle(handle ->
-                handle.execute("CREATE TABLE IF NOT EXISTS authorized_user (authorizationKey varchar(255) UNIQUE, user varchar(255))"));
+        jdbi.withHandle(handle ->
+        {
+            int execute = handle.execute("CREATE TABLE IF NOT EXISTS authorized_user (authorizationKey varchar(255) UNIQUE, user varchar(255))");
+            if (execute != 0) {
+                handle.execute("CREATE UNIQUE INDEX `idx_authorized_user_authorizationKey`  ON `authorized_user` (authorizationKey) COMMENT '' ALGORITHM DEFAULT LOCK DEFAULT");
+            }
+            return execute;
+        });
     }
 
     /**
