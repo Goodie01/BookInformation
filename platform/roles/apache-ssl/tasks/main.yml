@@ -74,9 +74,10 @@
     owner: root
     group: root
     mode: u=rw,g=r,o=r
+  when: sample_com_challenge is changed
   with_items:
-    - "bookinformation.seshat.cc"
-    - "www.bookinformation.seshat.cc"
+      - "bookinformation.seshat.cc"
+      - "www.bookinformation.seshat.cc"
 
 - name: "Complete Let's Encrypt challenges"
   acme_certificate:
