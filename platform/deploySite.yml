@@ -14,6 +14,7 @@
       apache_vhosts:
         - servername: "{{ front_hostname }}"
           extra_parameters: |
+            Alias ".well-known/acme-challenge/" "/var/www/challenges"
             ProxyPass / http://127.0.0.1:7080/
             ProxyPassReverse / http://127.0.0.1:7080/
 

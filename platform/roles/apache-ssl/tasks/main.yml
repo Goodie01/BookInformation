@@ -1,0 +1,27 @@
+---
+- role: geerlingguy.apache
+  apache_remove_default_vhost: true
+  apache_create_vhosts: true
+  apache_mods_enabled:
+    - rewrite.load
+    - ssl.load
+    - proxy.load
+    - proxy_http.load
+  apache_vhosts:
+    - servername: "{{ front_hostname }}"
+      extra_parameters: |
+        Alias ".well-known/acme-challenge/" "/var/www/challenges"
+        ProxyPass / http://127.0.0.1:7080/
+        ProxyPassReverse / http://127.0.0.1:7080/
+
+- name: create directorys
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/var/www/challenges"
+
+- name: Set up file to check stuff
+    copy:
+      src: test
+      dest: /var/www/challenges/

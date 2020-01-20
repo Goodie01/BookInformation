@@ -9,7 +9,7 @@ build:
     - mvn --batch-mode -U -Dmaven.repo.local=.m2/repository -f app/pom.xml clean package
   cache:
     paths:
-      - .m2/repository #this path is relative to the current directory, eg, I can't reference /root/.m2, but only project/root/.m2
+      - .m2/repository
   artifacts:
     paths:
       - app/target/bookInformation.jar
@@ -27,3 +27,6 @@ deploy:
     - cd platform
     - ansible-galaxy install -r requirements.yml --roles-path=.galaxy/
     - ansible-playbook deploySite.yml -i staging/production --private-key="$SSH_KEY"
+  cache:
+    paths:
+      - .galaxy
