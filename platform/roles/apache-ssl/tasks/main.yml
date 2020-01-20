@@ -18,14 +18,6 @@
       - ssl.load
       - proxy.load
       - proxy_http.load
-    apache_vhosts_ssl:
-      - servername: "bookinformation.seshat.cc"
-        certificate_file: "/opt/certs/example.crt"
-        certificate_key_file: "/opt/certs/example.key"
-        certificate_chain_file: "/opt/certs/certificate_chain.crt"
-        extra_parameters: |
-          ProxyPass / http://127.0.0.1:7000/
-          ProxyPassReverse / http://127.0.0.1:7000/
     apache_vhosts:
       - servername: "bookinformation.seshat.cc"
         documentroot: "/var/www/html"
@@ -86,3 +78,26 @@
     chain_dest: "/opt/certs/chain_bookinformation.seshat.cc.crt"
     fullchain_dest: "/opt/certs/fullchain_bookinformation.seshat.cc"
     data: "{{ acme_challenge_your_domain }}"
+
+- name: Install apache
+  include_role:
+    name: geerlingguy.apache
+  vars:
+    apache_remove_default_vhost: true
+    apache_create_vhosts: true
+    apache_mods_enabled:
+      - rewrite.load
+      - ssl.load
+      - proxy.load
+      - proxy_http.load
+    apache_vhosts_ssl:
+      - servername: "bookinformation.seshat.cc"
+        certificate_file: "/opt/certs/example.crt"
+        certificate_key_file: "/opt/certs/example.key"
+        certificate_chain_file: "/opt/certs/certificate_chain.crt"
+        extra_parameters: |
+          ProxyPass / http://127.0.0.1:7000/
+          ProxyPassReverse / http://127.0.0.1:7000/
+    apache_vhosts:
+      - servername: "bookinformation.seshat.cc"
+        documentroot: "/var/www/html"
