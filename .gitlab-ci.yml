@@ -24,6 +24,9 @@ deploy:
     - chmod 600 "$SSH_KEY"
     - cp app/target/bookInformation.jar platform
     - cp $PRODUCTION_PROPERTIES platform/default.properties
+    - cp $ACCOUNT_KEY platform/account.key
+    - cp $CSR_FILE platform/bookinformation.seshat.cc.csr
+    - cp $CERT_PRIVATE_KEY platform/bookinformation.seshat.cc.key
     - cd platform
     - ansible-galaxy install -r requirements.yml --roles-path=.galaxy/
     - ansible-playbook deploySite.yml -i staging/production --private-key="$SSH_KEY"
