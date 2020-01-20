@@ -40,6 +40,14 @@
     - bookinformation.seshat.cc.csr
     - account.key
 
+- name: "Create .well-known/acme-challenge directory"
+  file:
+    path: /var/www/html/.well-known/acme-challenge
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+
 - name: "Begin Let's Encrypt challenges"
   acme_certificate:
     acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
