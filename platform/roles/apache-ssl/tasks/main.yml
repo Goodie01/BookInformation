@@ -1,4 +1,12 @@
 ---
+- name: create directorys
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/var/www/challenges"
+    - "/opt/certs"
+
 - role: geerlingguy.apache
   apache_remove_default_vhost: true
   apache_create_vhosts: true
@@ -7,19 +15,24 @@
     - ssl.load
     - proxy.load
     - proxy_http.load
+  apache_vhosts_ssl:
+    - servername: "{{ front_hostname }}"
+      certificate_file: "/opt/certs/example.crt"
+      certificate_key_file: "/opt/certs/example.key"
+      certificate_chain_file: "/opt/certs/certificate_chain.crt"
+      extra_parameters: |
+        ProxyPass / http://127.0.0.1:7000/
+        ProxyPassReverse / http://127.0.0.1:7000/
   apache_vhosts:
     - servername: "{{ front_hostname }}"
       extra_parameters: |
         Alias ".well-known/acme-challenge/" "/var/www/challenges"
-        ProxyPass / http://127.0.0.1:7080/
-        ProxyPassReverse / http://127.0.0.1:7080/
 
-- name: create directorys
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - "/var/www/challenges"
+- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+  seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
 
 - name: Set up file to check stuff
     copy:
