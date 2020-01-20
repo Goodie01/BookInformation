@@ -4,7 +4,7 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "/var/www/challenges"
+    - "/var/www/html"
     - "/opt/certs"
 
 - name: Install apache
@@ -19,7 +19,7 @@
       - proxy.load
       - proxy_http.load
     apache_vhosts_ssl:
-      - servername: "{{ front_hostname }}"
+      - servername: "bookinformation.seshat.cc"
         certificate_file: "/opt/certs/example.crt"
         certificate_key_file: "/opt/certs/example.key"
         certificate_chain_file: "/opt/certs/certificate_chain.crt"
@@ -27,9 +27,8 @@
           ProxyPass / http://127.0.0.1:7000/
           ProxyPassReverse / http://127.0.0.1:7000/
     apache_vhosts:
-      - servername: "{{ front_hostname }}"
-        extra_parameters: |
-          Alias ".well-known/acme-challenge/" "/var/www/challenges"
+      - servername: "bookinformation.seshat.cc"
+        documentroot: "/var/www/html"
 
 - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
   seboolean:
@@ -37,7 +36,53 @@
     state: yes
     persistent: yes
 
-- name: Set up file to check stuff
+- name: Copy required files
   copy:
-    src: test
-    dest: /var/www/challenges/
+    src: "{{ item }}"
+    dest: "/opt/certs/{{ item }}"
+    owner: root
+    group: root
+    mode: 0700
+  with_items:
+    - bookinformation.seshat.cc.key
+    - bookinformation.seshat.cc.csr
+    - account.key
+
+- name: "Begin Let's Encrypt challenges"
+  acme_certificate:
+    acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
+    acme_version: "2"
+    account_key_src: "/opt/certs/account.key"
+    account_email: "thomas@goodiemania.org"
+    terms_agreed: 1
+    challenge: "http-01"
+    csr: "/opt/certs/bookinformation.seshat.cc.csr"
+    dest: "/opt/certs/bookinformation.seshat.cc.crt"
+    fullchain_dest: "/opt/certs/fullchain_bookinformation.seshat.cc.chain.crt"
+    remaining_days: 91
+  register: acme_challenge_your_domain
+
+
+- name: "Implement http-01 challenge files"
+  copy:
+    content: "{{ acme_challenge_your_domain['challenge_data'][item]['http-01']['resource_value'] }}"
+    dest: "/var/www/html/{{ acme_challenge_your_domain['challenge_data'][item]['http-01']['resource'] }}"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  with_items:
+    - "bookinformation.seshat.cc"
+    - "www.bookinformation.seshat.cc"
+
+- name: "Complete Let's Encrypt challenges"
+  acme_certificate:
+    acme_directory: "https://acme-v02.api.letsencrypt.org/directory"
+    acme_version: "2"
+    account_key_src: "{{ letsencrypt_account_key }}"
+    account_email: "thomas@goodiemania.org"
+    challenge: "http-01"
+    csr: "/opt/certs/bookinformation.seshat.cc.csr"
+    dest: "/opt/certs/bookinformation.seshat.cc.crt"
+    chain_dest: "/opt/certs/chain_bookinformation.seshat.cc.crt"
+    fullchain_dest: "/opt/certs/fullchain_bookinformation.seshat.cc"
+    data: "{{ acme_challenge_your_domain }}"
