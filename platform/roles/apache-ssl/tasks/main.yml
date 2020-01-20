@@ -100,9 +100,9 @@
       - proxy_http.load
     apache_vhosts_ssl:
       - servername: "bookinformation.seshat.cc"
-        certificate_file: "/opt/certs/example.crt"
-        certificate_key_file: "/opt/certs/example.key"
-        certificate_chain_file: "/opt/certs/certificate_chain.crt"
+        certificate_file: "/opt/certs/bookinformation.seshat.cc.crt"
+        certificate_key_file: "/opt/certs/bookinformation.seshat.cc.key"
+        certificate_chain_file: "/opt/certs/fullchain_bookinformation.seshat.cc"
         extra_parameters: |
           ProxyPass / http://127.0.0.1:7000/
           ProxyPassReverse / http://127.0.0.1:7000/
