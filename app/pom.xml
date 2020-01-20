@@ -5,7 +5,7 @@
     <groupId>org.goodiemania</groupId>
     <artifactId>BookInformation</artifactId>
     <name>BookInformation</name>
-    <version>1.0.1</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 

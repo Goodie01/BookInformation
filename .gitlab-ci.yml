@@ -6,7 +6,11 @@ build:
   stage: build
   image: maven:3.6.3-jdk-11
   script:
-    - mvn --batch-mode -U -Dmaven.repo.local=.m2/repository -f app/pom.xml clean package
+    - MAVEN_CLI_OPTS="--batch-mode -U -Dmaven.repo.local=.m2/repository -f app/pom.xml"
+    - VERSION=$(mvn $MAVEN_CLI_OPTS help:evaluate -Dexpression=project.version | grep -e '^[0-9]\+\.[0-9]\+\.[0-9]\+-SNAPSHOT' | cut -d- -f1)+${CI_PIPELINE_IID}
+    - mvn $MAVEN_CLI_OPTS versions:set -DnewVersion=${VERSION}
+    - echo ${VERSION}
+    - mvn $MAVEN_CLI_OPTS clean package
   cache:
     paths:
       - .m2/repository
