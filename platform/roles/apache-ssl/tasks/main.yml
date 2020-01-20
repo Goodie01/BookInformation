@@ -74,7 +74,7 @@
     owner: root
     group: root
     mode: u=rw,g=r,o=r
-  when: "{{ acme_challenge_your_domain['challenge_data'] }}" is defined
+  when: acme_challenge_your_domain["challenge_data"] is defined and (acme_challenge_your_domain["challenge_data"]|length>0)
   with_items:
       - "bookinformation.seshat.cc"
       - "www.bookinformation.seshat.cc"
