@@ -74,7 +74,7 @@
     owner: root
     group: root
     mode: u=rw,g=r,o=r
-  when: sample_com_challenge is changed
+    when: sample_com_challenge is changed
   with_items:
       - "bookinformation.seshat.cc"
       - "www.bookinformation.seshat.cc"
