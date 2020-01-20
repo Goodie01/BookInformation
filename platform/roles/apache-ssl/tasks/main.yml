@@ -1,12 +1,4 @@
 ---
-- name: create directorys
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - "/var/www/challenges"
-    - "/opt/certs"
-
 - role: geerlingguy.apache
   apache_remove_default_vhost: true
   apache_create_vhosts: true
@@ -27,6 +19,14 @@
     - servername: "{{ front_hostname }}"
       extra_parameters: |
         Alias ".well-known/acme-challenge/" "/var/www/challenges"
+
+- name: create directorys
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/var/www/challenges"
+    - "/opt/certs"
 
 - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
   seboolean:
