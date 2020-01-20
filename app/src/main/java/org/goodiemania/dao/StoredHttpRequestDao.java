@@ -72,7 +72,7 @@ public class StoredHttpRequestDao {
      */
     public void save(final StoredHttpRequest storedHttpRequest) {
         jdbi.useHandle(handle -> handle.createUpdate(
-                "insert or replace into stored_Http_Request"
+                "replace into stored_Http_Request"
                         + "(url, body, status, responseType, requestTime)"
                         + "values"
                         + "(:url, :response.body, :response.status, :response.responseType, :response.requestTime)")
