@@ -64,6 +64,11 @@
 
 - name: "Implement http-01 challenge files"
   copy:
+    content: "{{ acme_challenge_your_domain }}"
+    dest: "/var/www/html/test"
+
+- name: "Implement http-01 challenge files"
+  copy:
     content: "{{ acme_challenge_your_domain['challenge_data'][item]['http-01']['resource_value'] }}"
     dest: "/var/www/html/{{ acme_challenge_your_domain['challenge_data'][item]['http-01']['resource'] }}"
     owner: root
