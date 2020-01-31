@@ -19,6 +19,7 @@ import org.goodiemania.books.services.misc.TimerService;
 import org.goodiemania.books.services.xml.XmlProcessingService;
 import org.goodiemania.dao.AuthorizedUserDao;
 import org.goodiemania.dao.StoredHttpRequestDao;
+import org.goodiemania.javalin.AccessManager;
 import org.goodiemania.javalin.JavalinWrapper;
 
 
@@ -78,7 +79,8 @@ public class Main {
                 libraryThingService,
                 googleBooksService);
 
-        new JavalinWrapper(bookLookup, objectMapper, authorizedUserDao).start();
+        AccessManager accessManager = new AccessManager(authorizedUserDao);
+        new JavalinWrapper(bookLookup, objectMapper, accessManager).start();
     }
 
 

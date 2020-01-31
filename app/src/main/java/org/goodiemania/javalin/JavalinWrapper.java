@@ -5,35 +5,33 @@ import static io.javalin.apibuilder.ApiBuilder.path;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.Javalin;
-import io.javalin.core.security.AccessManager;
 import io.javalin.http.Context;
 import io.javalin.plugin.json.JavalinJackson;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.BookLookupService;
-import org.goodiemania.dao.AuthorizedUserDao;
 import org.goodiemania.models.BookResponse;
 import org.goodiemania.models.books.BookInformation;
 
 public class JavalinWrapper {
     private final BookLookupService bookLookupService;
     private ObjectMapper objectMapper;
-    private AuthorizedUserDao authorizedUserDao;
+    private AccessManager accessManager;
 
     /**
      * Creates a new instance of the javalin wrapper.
      *
      * @param bookLookupService Used to look up books
      * @param objectMapper      Used to map objects to and from JSON
-     * @param authorizedUserDao Used to look up authorized users from the database
+     * @param accessManager     Used to look up authorized users from the database
      */
     public JavalinWrapper(
             final BookLookupService bookLookupService,
             final ObjectMapper objectMapper,
-            final AuthorizedUserDao authorizedUserDao) {
+            final AccessManager accessManager) {
         this.bookLookupService = bookLookupService;
         this.objectMapper = objectMapper;
-        this.authorizedUserDao = authorizedUserDao;
+        this.accessManager = accessManager;
     }
 
     /**
@@ -44,7 +42,6 @@ public class JavalinWrapper {
             config.defaultContentType = "application/json";
             config.enableCorsForAllOrigins();
 
-            AccessManager accessManager = createAccessmanager();
             config.accessManager(accessManager);
         });
 
@@ -73,26 +70,5 @@ public class JavalinWrapper {
 
         List<BookInformation> bookResponse = bookLookupService.byIsbn(searchTerm);
         ctx.json(BookResponse.of(bookResponse));
-    }
-
-    private AccessManager createAccessmanager() {
-        return (handler, ctx, permittedRoles) -> {
-            String authorizationCode = ctx.header("authorization");
-            authorizedUserDao.getByKey(authorizationCode)
-                    .ifPresentOrElse(
-                            authorizedUser -> {
-                                try {
-                                    System.out.println(ctx.path() + "; Authorization header:" + authorizationCode);
-                                    handler.handle(ctx);
-                                } catch (Exception e) {
-                                    throw new IllegalStateException(e);
-                                }
-                            },
-                            () -> {
-                                System.out.printf("Access denied for: Authorization header: %s; path: %s%n", authorizationCode, ctx.path());
-                                ctx.json("Invalid user");
-                                ctx.status(403);
-                            });
-        };
     }
 }
