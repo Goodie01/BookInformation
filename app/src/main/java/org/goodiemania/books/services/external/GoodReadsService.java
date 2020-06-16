@@ -6,6 +6,7 @@ import org.goodiemania.books.services.http.HttpRequestService;
 import org.goodiemania.books.services.http.HttpServiceResponse;
 import org.goodiemania.books.services.misc.StringEscapeUtils;
 import org.goodiemania.books.services.xml.XmlDocument;
+import org.goodiemania.books.services.xml.XmlParseException;
 import org.goodiemania.books.services.xml.XmlProcessingService;
 
 public class GoodReadsService {
@@ -48,12 +49,17 @@ public class GoodReadsService {
             return Optional.empty();
         }
 
-        XmlDocument resultDocument = xmlProcessingService.parse(response);
+        try {
+            XmlDocument resultDocument = xmlProcessingService.parse(response);
 
-        if (StringUtils.isNotBlank(resultDocument.getValueAsString("/error"))) {
+            if (StringUtils.isNotBlank(resultDocument.getValueAsString("/error"))) {
+                return Optional.empty();
+            }
+
+            return Optional.of(resultDocument);
+        } catch (XmlParseException e) {
+            e.printStackTrace();
             return Optional.empty();
         }
-
-        return Optional.of(resultDocument);
     }
 }

@@ -6,9 +6,11 @@ import org.goodiemania.books.services.http.HttpRequestService;
 import org.goodiemania.books.services.http.HttpServiceResponse;
 import org.goodiemania.books.services.misc.StringEscapeUtils;
 import org.goodiemania.books.services.xml.XmlDocument;
+import org.goodiemania.books.services.xml.XmlParseException;
 import org.goodiemania.books.services.xml.XmlProcessingService;
 
 public class LibraryThingService {
+    private static final String API_DISABLED_ERROR = "APIs Temporarily disabled.";
     private final HttpRequestService httpClient;
     private final String developerKey;
     private XmlProcessingService xmlProcessingService;
@@ -52,12 +54,18 @@ public class LibraryThingService {
             return Optional.empty();
         }
 
-        XmlDocument parse = xmlProcessingService.parse(stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse()));
+        try {
+            XmlDocument parse = xmlProcessingService.parse(stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse()));
 
-        if (StringUtils.isNotBlank(parse.getValueAsString("/response/err"))) {
+            if (StringUtils.isNotBlank(parse.getValueAsString("/response/err"))) {
+                return Optional.empty();
+            }
+
+            return Optional.of(parse);
+        } catch (XmlParseException e) {
+            //TODO log this properly
+            e.printStackTrace();
             return Optional.empty();
         }
-
-        return Optional.of(parse);
     }
 }

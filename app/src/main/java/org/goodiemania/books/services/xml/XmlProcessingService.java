@@ -35,12 +35,12 @@ public class XmlProcessingService {
      * @param xmlDocument The string XML document
      * @return The XML Document representing the string
      */
-    public XmlDocument parse(final String xmlDocument) {
+    public XmlDocument parse(final String xmlDocument) throws XmlParseException {
         try {
             Document document = builder.parse(new InputSource(new StringReader(xmlDocument)));
             return new XmlDocument(document, xpathFactory);
         } catch (SAXException | IOException e) {
-            throw new IllegalStateException(e);
+            throw new XmlParseException(e);
         }
     }
 }
