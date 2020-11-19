@@ -22,6 +22,11 @@ public class AccessManager implements io.javalin.core.security.AccessManager {
             @NotNull final Context ctx,
             @NotNull final Set<Role> permittedRoles) throws Exception {
 
+        if (StringUtils.equals(ctx.path(), "health")) {
+            handler.handle(ctx);
+            return;
+        }
+
         String authorizationCode = findAuthHeaderValue(ctx);
         authorizedUserDao.getByKey(authorizationCode)
                 .ifPresentOrElse(
