@@ -54,6 +54,10 @@ public class JavalinWrapper {
                     get(this::handleBookGet);
                 });
             });
+            get("health", ctx -> {
+                ctx.contentType("application/health+json");
+                ctx.json("OK");
+            });
         });
 
         app.start();
