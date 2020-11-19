@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.BookLookupService;
 import org.goodiemania.models.BookResponse;
+import org.goodiemania.models.ErrorResponse;
 import org.goodiemania.models.books.BookInformation;
 
 public class JavalinWrapper {
@@ -64,7 +65,7 @@ public class JavalinWrapper {
 
         if (StringUtils.isAnyBlank(searchType, searchTerm)) {
             ctx.status(501);
-            ctx.json("Endpoint requires both a searchType query param and a searchTerm");
+            ctx.json(ErrorResponse.of("Endpoint requires both a searchType query param and a searchTerm"));
             return;
         }
 

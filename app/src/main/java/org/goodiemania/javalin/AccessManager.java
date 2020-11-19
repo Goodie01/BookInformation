@@ -6,6 +6,7 @@ import io.javalin.http.Handler;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.dao.AuthorizedUserDao;
+import org.goodiemania.models.ErrorResponse;
 import org.jetbrains.annotations.NotNull;
 
 public class AccessManager implements io.javalin.core.security.AccessManager {
@@ -34,7 +35,7 @@ public class AccessManager implements io.javalin.core.security.AccessManager {
                         },
                         () -> {
                             System.out.printf("Access denied for: Authorization header: %s; path: %s%n", authorizationCode, ctx.path());
-                            ctx.json("Invalid user");
+                            ctx.json(ErrorResponse.of("Invalid user"));
                             ctx.status(403);
                         });
 
