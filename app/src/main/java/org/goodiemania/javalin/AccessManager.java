@@ -22,7 +22,7 @@ public class AccessManager implements io.javalin.core.security.AccessManager {
             @NotNull final Context ctx,
             @NotNull final Set<Role> permittedRoles) throws Exception {
 
-        if (StringUtils.equals(ctx.path(), "health")) {
+        if (StringUtils.equals(ctx.path(), "/health")) {
             handler.handle(ctx);
             return;
         }
