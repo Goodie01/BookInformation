@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.goodiemania.books.BookLookupService;
 import org.goodiemania.models.BookResponse;
 import org.goodiemania.models.ErrorResponse;
+import org.goodiemania.models.GitProperties;
+import org.goodiemania.models.HealthCheckResponse;
 import org.goodiemania.models.books.BookInformation;
 
 public class JavalinWrapper {
@@ -56,7 +58,12 @@ public class JavalinWrapper {
             });
             get("health", ctx -> {
                 ctx.contentType("application/health+json");
-                ctx.json("OK");
+                GitProperties gitProperties = GitProperties.fromPropsFile();
+                HealthCheckResponse resp = new HealthCheckResponse();
+                resp.setStatus("OK");
+                resp.setVersion(gitProperties.getBuildVersion());
+
+                ctx.json(resp);
             });
         });
 
