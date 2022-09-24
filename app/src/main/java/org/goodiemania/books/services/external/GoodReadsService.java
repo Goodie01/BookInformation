@@ -9,6 +9,8 @@ import org.goodiemania.books.services.xml.XmlDocument;
 import org.goodiemania.books.services.xml.XmlParseException;
 import org.goodiemania.books.services.xml.XmlProcessingService;
 
+//TODO 404's??? Page not found error?
+// <error>Page not found</error>
 public class GoodReadsService {
     private final XmlProcessingService xmlProcessingService;
     private final StringEscapeUtils stringEscapeUtils;
@@ -40,26 +42,6 @@ public class GoodReadsService {
      * @return A XMLDocument representing the return value
      */
     public Optional<XmlDocument> getBookInfoByIsbn(final String isbn) {
-        String uriString = String.format("https://www.goodreads.com/book/isbn/%s?format=xml&key=%s",
-                isbn, goodReadsKey);
-        HttpServiceResponse httpServiceResponse = httpClient.get(uriString, true);
-        String response = stringEscapeUtils.escapeHtmlEntitiesInXml(httpServiceResponse.getResponse());
-
-        if (httpServiceResponse.getStatus() != 200) {
-            return Optional.empty();
-        }
-
-        try {
-            XmlDocument resultDocument = xmlProcessingService.parse(response);
-
-            if (StringUtils.isNotBlank(resultDocument.getValueAsString("/error"))) {
-                return Optional.empty();
-            }
-
-            return Optional.of(resultDocument);
-        } catch (XmlParseException e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
+        return Optional.empty();
     }
 }
